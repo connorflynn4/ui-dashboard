@@ -103,27 +103,25 @@ function selectFixture(durationHours: number): ReportFixture {
 function inferPointMetrics(
   status: StatusSegment["status"],
   timestamp: string,
-  averagePerformance: number,
+  targetPerformance: number,
   targetUnitsPerMinute: number,
 ) {
   if (status === "stopped") {
     return { performance: 0, speedUpm: 0 };
   }
 
-  const variation = pseudoRandom(timestamp) * 0.1 - 0.05;
-
   if (status === "downtime") {
-    const performance = clamp(0.12 + pseudoRandom(`${timestamp}-downtime`) * 0.18, 0.08, 0.35);
-    return {
-      performance: Number(performance.toFixed(3)),
-      speedUpm: Number((performance * targetUnitsPerMinute).toFixed(1)),
-    };
+    return { performance: 0, speedUpm: 0 };
   }
 
-  const performance = clamp(averagePerformance + variation, 0.55, 0.86);
+  const variation = pseudoRandom(timestamp) * 0.12 - 0.06;
+  const runningPerformance = clamp(targetPerformance + variation, 0.68, 0.92);
+  const speedUpm = Number((runningPerformance * targetUnitsPerMinute).toFixed(1));
+  const performance = Number((speedUpm / targetUnitsPerMinute).toFixed(3));
+
   return {
-    performance: Number(performance.toFixed(3)),
-    speedUpm: Number((performance * targetUnitsPerMinute).toFixed(1)),
+    performance,
+    speedUpm,
   };
 }
 
@@ -131,7 +129,7 @@ function buildPerformanceSeriesFromTimeline(
   statusTimeline: StatusSegment[],
   start: Date,
   end: Date,
-  averagePerformance: number,
+  targetPerformance: number,
   targetUnitsPerMinute: number,
 ): PerformancePoint[] {
   const durationMs = end.getTime() - start.getTime();
@@ -160,7 +158,6 @@ function buildPerformanceSeriesFromTimeline(
       continue;
     }
 
-    let weightedPerformance = 0;
     let weightedSpeed = 0;
     let totalWeight = 0;
     let dominantStatus: PerformancePoint["status"] = "stopped";
@@ -178,11 +175,10 @@ function buildPerformanceSeriesFromTimeline(
       const metrics = inferPointMetrics(
         segment.status,
         new Date(bucketStartMs).toISOString(),
-        averagePerformance,
+        targetPerformance,
         targetUnitsPerMinute,
       );
 
-      weightedPerformance += metrics.performance * overlapMinutes;
       weightedSpeed += metrics.speedUpm * overlapMinutes;
       totalWeight += overlapMinutes;
 
@@ -192,8 +188,9 @@ function buildPerformanceSeriesFromTimeline(
       }
     }
 
-    const performance = totalWeight === 0 ? 0 : Number((weightedPerformance / totalWeight).toFixed(3));
     const speedUpm = totalWeight === 0 ? 0 : Number((weightedSpeed / totalWeight).toFixed(1));
+    const performance =
+      targetUnitsPerMinute === 0 ? 0 : Number((speedUpm / targetUnitsPerMinute).toFixed(3));
     cumulativeProduced += Math.round(speedUpm * totalWeight);
 
     points.push({
@@ -332,7 +329,6 @@ export function buildReportResponse(start: Date, end: Date, timeZone = DEFAULT_T
     }))
     .sort((left, right) => right.totalMinutes - left.totalMinutes);
 
-  const totalProduced = Math.round(fixture.summary.totalProduced * scaleFactor);
   const totalStoppedMinutes = statusTimeline
     .filter((segment) => segment.status === "stopped")
     .reduce((sum, segment) => sum + segment.durationMinutes, 0);
@@ -358,7 +354,20 @@ export function buildReportResponse(start: Date, end: Date, timeZone = DEFAULT_T
       ? 0
       : clamp(totalRunningMinutes / plannedProductionMinutes, 0, 1);
 
-  const performance = fixture.summary.averagePerformance;
+  const performanceSeries = buildPerformanceSeriesFromTimeline(
+    statusTimeline,
+    start,
+    end,
+    fixture.line.targetPerformance,
+    fixture.line.targetUnitsPerMinute,
+  );
+  const totalProduced = performanceSeries.at(-1)?.cumulativeProduced ?? 0;
+  const averageSpeedUpm =
+    requestedDurationMinutes === 0 ? 0 : Number((totalProduced / requestedDurationMinutes).toFixed(1));
+  const performance =
+    fixture.line.targetUnitsPerMinute === 0
+      ? 0
+      : Number((averageSpeedUpm / fixture.line.targetUnitsPerMinute).toFixed(3));
   const rejectRate = fixture.summary.rejectRate ?? 0.012;
   const rejectedUnits = Math.round(totalProduced * rejectRate);
   const goodUnits = Math.max(0, totalProduced - rejectedUnits);
@@ -390,14 +399,6 @@ export function buildReportResponse(start: Date, end: Date, timeZone = DEFAULT_T
       };
     });
 
-  const performanceSeries = buildPerformanceSeriesFromTimeline(
-    statusTimeline,
-    start,
-    end,
-    fixture.summary.averagePerformance,
-    fixture.line.targetUnitsPerMinute,
-  );
-
   return {
     line: fixture.line,
     range: {
@@ -408,7 +409,7 @@ export function buildReportResponse(start: Date, end: Date, timeZone = DEFAULT_T
     },
     shifts,
     summary: {
-      averageSpeedUpm: fixture.summary.averageSpeedUpm,
+      averageSpeedUpm,
       totalProduced,
       goodUnits,
       rejectedUnits,

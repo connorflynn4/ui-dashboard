@@ -29,6 +29,22 @@ describe("buildReportResponse", () => {
     }
   });
 
+  test("derives performance from speed relative to target speed", () => {
+    const report = buildReportResponse(
+      new Date("2026-03-10T00:00:00.000Z"),
+      new Date("2026-03-17T00:00:00.000Z"),
+    );
+    const targetSpeed = report.line.targetUnitsPerMinute;
+
+    expect(report.summary.averagePerformance).toBeCloseTo(report.summary.averageSpeedUpm / targetSpeed, 2);
+    expect(report.summary.performance).toBeCloseTo(report.summary.averageSpeedUpm / targetSpeed, 2);
+
+    for (const point of report.performanceSeries) {
+      const expectedPerformance = targetSpeed === 0 ? 0 : point.speedUpm / targetSpeed;
+      expect(point.performance).toBeCloseTo(expectedPerformance, 2);
+    }
+  });
+
   test("sorts downtime pareto by impact and covers the selected range", () => {
     const start = new Date("2026-03-10T00:00:00.000Z");
     const end = new Date("2026-03-17T00:00:00.000Z");
