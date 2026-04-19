@@ -44,4 +44,51 @@ describe("buildReportResponse", () => {
     expect(Math.round(totalTimelineMinutes)).toBe(Math.round(rangeMinutes));
     expect(report.downtimeEvents.every((event) => event.durationMinutes > 0)).toBe(true);
   });
+
+  test("splits downtime into planned and unplanned totals", () => {
+    const report = buildReportResponse(
+      new Date("2026-03-10T00:00:00.000Z"),
+      new Date("2026-03-17T00:00:00.000Z"),
+    );
+
+    const plannedFromTimeline = report.statusTimeline
+      .filter((segment) => segment.status === "downtime" && segment.downtimeKind === "planned")
+      .reduce((sum, segment) => sum + segment.durationMinutes, 0);
+    const unplannedFromTimeline = report.statusTimeline
+      .filter((segment) => segment.status === "downtime" && segment.downtimeKind !== "planned")
+      .reduce((sum, segment) => sum + segment.durationMinutes, 0);
+
+    expect(report.summary.totalPlannedDowntimeMinutes).toBe(plannedFromTimeline);
+    expect(report.summary.totalUnplannedDowntimeMinutes).toBe(unplannedFromTimeline);
+    expect(report.summary.totalPlannedDowntimeMinutes).toBeGreaterThan(0);
+    expect(report.summary.totalUnplannedDowntimeMinutes).toBeGreaterThan(0);
+  });
+
+  test("availability excludes planned downtime from the denominator", () => {
+    const report = buildReportResponse(
+      new Date("2026-03-10T00:00:00.000Z"),
+      new Date("2026-03-17T00:00:00.000Z"),
+    );
+
+    const expectedDenominator =
+      report.summary.totalRunningMinutes + report.summary.totalUnplannedDowntimeMinutes;
+    const expectedAvailability =
+      expectedDenominator === 0 ? 0 : report.summary.totalRunningMinutes / expectedDenominator;
+
+    expect(report.summary.availability).toBeCloseTo(expectedAvailability, 2);
+    expect(report.summary.plannedProductionMinutes).toBe(expectedDenominator);
+  });
+
+  test("exposes shifts and target performance from the fixture", () => {
+    const report = buildReportResponse(
+      new Date("2026-03-16T00:00:00.000Z"),
+      new Date("2026-03-17T00:00:00.000Z"),
+    );
+
+    expect(report.line.targetPerformance).toBeGreaterThan(0);
+    expect(report.shifts.length).toBeGreaterThan(0);
+    for (const shift of report.shifts) {
+      expect(new Date(shift.startsAt).getTime()).toBeLessThan(new Date(shift.endsAt).getTime());
+    }
+  });
 });

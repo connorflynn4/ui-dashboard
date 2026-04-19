@@ -1,5 +1,11 @@
 import reportFixtures from "@/data/report-fixtures.json";
-import type { ReportResponse } from "@/types/report";
+import type {
+  DowntimeKind,
+  PerformancePoint,
+  ReportResponse,
+  Shift,
+  StatusSegment,
+} from "@/types/report";
 
 const DEFAULT_TIMEZONE = "America/Vancouver";
 
@@ -24,29 +30,29 @@ type RangeResolution =
       message: string;
     };
 
-type ReportFixtureCollection = {
-  reports: Array<
-    ReportResponse & {
-      durationHours: number;
-    }
-  >;
-};
+type ReportFixture = ReportResponse & { durationHours: number };
+type ReportFixtureCollection = { reports: ReportFixture[] };
 
 function subtractDays(date: Date, days: number) {
   return new Date(date.getTime() - days * 24 * 60 * 60 * 1000);
 }
 
-const fixtures = reportFixtures as ReportFixtureCollection;
+const fixtures = reportFixtures as unknown as ReportFixtureCollection;
 
 const downtimeEventMetadata: Record<
   string,
-  { source: "operator" | "plc" | "system"; impact: "minor" | "major" | "critical"; faultCode?: string }
+  {
+    source: "operator" | "plc" | "system";
+    impact: "minor" | "major" | "critical";
+    kind: DowntimeKind;
+    faultCode?: string;
+  }
 > = {
-  "Conveyor belt breakdown": { source: "plc", impact: "critical", faultCode: "CV-214" },
-  "Electrical issue": { source: "plc", impact: "major", faultCode: "EL-018" },
-  "Waiting on products": { source: "operator", impact: "major" },
-  "Changeover delay": { source: "operator", impact: "major" },
-  "Sensor fault reset": { source: "plc", impact: "minor", faultCode: "IR-007" },
+  "Conveyor belt breakdown": { source: "plc", impact: "critical", kind: "unplanned", faultCode: "CV-214" },
+  "Electrical issue": { source: "plc", impact: "major", kind: "unplanned", faultCode: "EL-018" },
+  "Waiting on products": { source: "operator", impact: "major", kind: "unplanned" },
+  "Changeover delay": { source: "operator", impact: "major", kind: "planned" },
+  "Sensor fault reset": { source: "plc", impact: "minor", kind: "unplanned", faultCode: "IR-007" },
 };
 
 function clamp(value: number, min: number, max: number) {
@@ -85,7 +91,7 @@ function scaleMinutes(value: number, scaleFactor: number) {
   return Math.max(0, Math.round(value * scaleFactor));
 }
 
-function selectFixture(durationHours: number) {
+function selectFixture(durationHours: number): ReportFixture {
   return fixtures.reports.reduce((closest, candidate) => {
     const closestDelta = Math.abs(closest.durationHours - durationHours);
     const candidateDelta = Math.abs(candidate.durationHours - durationHours);
@@ -95,7 +101,7 @@ function selectFixture(durationHours: number) {
 }
 
 function inferPointMetrics(
-  status: ReportResponse["statusTimeline"][number]["status"],
+  status: StatusSegment["status"],
   timestamp: string,
   averagePerformance: number,
   targetUnitsPerMinute: number,
@@ -122,16 +128,16 @@ function inferPointMetrics(
 }
 
 function buildPerformanceSeriesFromTimeline(
-  statusTimeline: ReportResponse["statusTimeline"],
+  statusTimeline: StatusSegment[],
   start: Date,
   end: Date,
   averagePerformance: number,
   targetUnitsPerMinute: number,
-) {
+): PerformancePoint[] {
   const durationMs = end.getTime() - start.getTime();
   const bucketHours = durationMs <= 48 * 60 * 60 * 1000 ? 4 : durationMs <= 14 * 24 * 60 * 60 * 1000 ? 12 : 24;
   const bucketMs = bucketHours * 60 * 60 * 1000;
-  const points: ReportResponse["performanceSeries"] = [];
+  const points: PerformancePoint[] = [];
   let cumulativeProduced = 0;
 
   for (let bucketStartMs = start.getTime(); bucketStartMs < end.getTime(); bucketStartMs += bucketMs) {
@@ -157,7 +163,7 @@ function buildPerformanceSeriesFromTimeline(
     let weightedPerformance = 0;
     let weightedSpeed = 0;
     let totalWeight = 0;
-    let dominantStatus: ReportResponse["performanceSeries"][number]["status"] = "stopped";
+    let dominantStatus: PerformancePoint["status"] = "stopped";
     let dominantMinutes = 0;
 
     for (const segment of overlappingSegments) {
@@ -263,7 +269,7 @@ export function buildReportResponse(start: Date, end: Date, timeZone = DEFAULT_T
   const scaleFactor = requestedDurationMs / fixtureDurationMs;
   const requestedStartMs = start.getTime();
 
-  const statusTimeline = fixture.statusTimeline.map((segment) => {
+  const statusTimeline: StatusSegment[] = fixture.statusTimeline.map((segment) => {
     const shiftedStart = scaleTimestamp(
       segment.start,
       fixtureStartMs,
@@ -301,6 +307,24 @@ export function buildReportResponse(start: Date, end: Date, timeZone = DEFAULT_T
     );
   }
 
+  const shifts: Shift[] = (fixture.shifts ?? []).map((shift) => ({
+    ...shift,
+    startsAt: scaleTimestamp(
+      shift.startsAt,
+      fixtureStartMs,
+      fixtureDurationMs,
+      requestedStartMs,
+      requestedDurationMs,
+    ),
+    endsAt: scaleTimestamp(
+      shift.endsAt,
+      fixtureStartMs,
+      fixtureDurationMs,
+      requestedStartMs,
+      requestedDurationMs,
+    ),
+  }));
+
   const downtimePareto = fixture.downtimePareto
     .map((event) => ({
       ...event,
@@ -309,15 +333,33 @@ export function buildReportResponse(start: Date, end: Date, timeZone = DEFAULT_T
     .sort((left, right) => right.totalMinutes - left.totalMinutes);
 
   const totalProduced = Math.round(fixture.summary.totalProduced * scaleFactor);
-  const totalDowntimeMinutes = scaleMinutes(fixture.summary.totalDowntimeMinutes, scaleFactor);
-  const totalStoppedMinutes = scaleMinutes(fixture.summary.totalStoppedMinutes, scaleFactor);
-  const plannedProductionMinutes = Math.max(0, requestedDurationMinutes - totalStoppedMinutes);
+  const totalStoppedMinutes = statusTimeline
+    .filter((segment) => segment.status === "stopped")
+    .reduce((sum, segment) => sum + segment.durationMinutes, 0);
+  const totalRunningMinutes = statusTimeline
+    .filter((segment) => segment.status === "running")
+    .reduce((sum, segment) => sum + segment.durationMinutes, 0);
+  const totalPlannedDowntimeMinutes = statusTimeline
+    .filter((segment) => segment.status === "downtime" && segment.downtimeKind === "planned")
+    .reduce((sum, segment) => sum + segment.durationMinutes, 0);
+  const totalUnplannedDowntimeMinutes = statusTimeline
+    .filter((segment) => segment.status === "downtime" && segment.downtimeKind !== "planned")
+    .reduce((sum, segment) => sum + segment.durationMinutes, 0);
+  const totalDowntimeMinutes = totalPlannedDowntimeMinutes + totalUnplannedDowntimeMinutes;
+
+  // Planned production time excludes both scheduled stops and planned downtime.
+  // Availability captures only unplanned losses.
+  const plannedProductionMinutes = Math.max(
+    0,
+    requestedDurationMinutes - totalStoppedMinutes - totalPlannedDowntimeMinutes,
+  );
   const availability =
     plannedProductionMinutes === 0
       ? 0
-      : clamp((plannedProductionMinutes - totalDowntimeMinutes) / plannedProductionMinutes, 0, 1);
+      : clamp(totalRunningMinutes / plannedProductionMinutes, 0, 1);
+
   const performance = fixture.summary.averagePerformance;
-  const rejectRate = clamp(0.008 + (totalDowntimeMinutes / Math.max(requestedDurationMinutes, 1)) * 0.025, 0.006, 0.03);
+  const rejectRate = fixture.summary.rejectRate ?? 0.012;
   const rejectedUnits = Math.round(totalProduced * rejectRate);
   const goodUnits = Math.max(0, totalProduced - rejectedUnits);
   const quality = totalProduced === 0 ? 1 : goodUnits / totalProduced;
@@ -329,10 +371,13 @@ export function buildReportResponse(start: Date, end: Date, timeZone = DEFAULT_T
       const metadata = downtimeEventMetadata[segment.reasonLabel ?? ""] ?? {
         source: "system" as const,
         impact: "major" as const,
+        kind: "unplanned" as const,
       };
 
+      const kind: DowntimeKind = segment.downtimeKind ?? metadata.kind;
+
       return {
-        id: `dt-${index + 1}`,
+        id: `dt-${new Date(segment.start).getTime()}-${index}`,
         start: segment.start,
         end: segment.end,
         durationMinutes: segment.durationMinutes,
@@ -340,6 +385,7 @@ export function buildReportResponse(start: Date, end: Date, timeZone = DEFAULT_T
         cause: segment.reasonLabel ?? "Unspecified downtime",
         source: metadata.source,
         impact: metadata.impact,
+        kind,
         faultCode: metadata.faultCode,
       };
     });
@@ -360,11 +406,13 @@ export function buildReportResponse(start: Date, end: Date, timeZone = DEFAULT_T
       timezone: timeZone,
       generatedAt: new Date().toISOString(),
     },
+    shifts,
     summary: {
       averageSpeedUpm: fixture.summary.averageSpeedUpm,
       totalProduced,
       goodUnits,
       rejectedUnits,
+      rejectRate: Number(rejectRate.toFixed(4)),
       availability: Number(availability.toFixed(3)),
       performance: Number(performance.toFixed(3)),
       quality: Number(quality.toFixed(3)),
@@ -372,7 +420,10 @@ export function buildReportResponse(start: Date, end: Date, timeZone = DEFAULT_T
       plannedProductionMinutes,
       averagePerformance: Number(performance.toFixed(3)),
       totalDowntimeMinutes,
+      totalPlannedDowntimeMinutes,
+      totalUnplannedDowntimeMinutes,
       totalStoppedMinutes,
+      totalRunningMinutes,
     },
     statusTimeline,
     performanceSeries,
@@ -381,6 +432,6 @@ export function buildReportResponse(start: Date, end: Date, timeZone = DEFAULT_T
   };
 }
 
-export function getStatusDisplayLabel(status: ReportResponse["statusTimeline"][number]["status"]) {
+export function getStatusDisplayLabel(status: StatusSegment["status"]) {
   return STATUS_LABELS[status];
 }

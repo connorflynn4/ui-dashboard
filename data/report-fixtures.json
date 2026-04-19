@@ -8,7 +8,8 @@
         "facilityName": "Cascade Foods - Vancouver Plant",
         "productName": "PET Bottle 500 mL",
         "unitOfMeasure": "bottles",
-        "targetUnitsPerMinute": 40
+        "targetUnitsPerMinute": 40,
+        "targetPerformance": 0.85
       },
       "range": {
         "start": "2026-03-16T00:00:00.000Z",
@@ -16,10 +17,15 @@
         "timezone": "America/Vancouver",
         "generatedAt": "2026-03-17T00:10:00.000Z"
       },
+      "shifts": [
+        { "id": "shift-day-2026-03-16", "name": "Day Shift", "startsAt": "2026-03-16T06:00:00.000Z", "endsAt": "2026-03-16T14:00:00.000Z" },
+        { "id": "shift-evening-2026-03-16", "name": "Evening Shift", "startsAt": "2026-03-16T14:00:00.000Z", "endsAt": "2026-03-16T22:00:00.000Z" }
+      ],
       "summary": {
         "averageSpeedUpm": 26.8,
         "totalProduced": 38592,
         "averagePerformance": 0.67,
+        "rejectRate": 0.012,
         "totalDowntimeMinutes": 184,
         "totalStoppedMinutes": 360
       },
@@ -34,7 +40,8 @@
           "start": "2026-03-16T06:00:00.000Z",
           "end": "2026-03-16T08:00:00.000Z",
           "status": "running",
-          "durationMinutes": 120
+          "durationMinutes": 120,
+          "shiftId": "shift-day-2026-03-16"
         },
         {
           "start": "2026-03-16T08:00:00.000Z",
@@ -42,13 +49,16 @@
           "status": "downtime",
           "durationMinutes": 60,
           "reasonCategory": "Mechanical",
-          "reasonLabel": "Conveyor belt breakdown"
+          "reasonLabel": "Conveyor belt breakdown",
+          "downtimeKind": "unplanned",
+          "shiftId": "shift-day-2026-03-16"
         },
         {
           "start": "2026-03-16T09:00:00.000Z",
           "end": "2026-03-16T12:00:00.000Z",
           "status": "running",
-          "durationMinutes": 180
+          "durationMinutes": 180,
+          "shiftId": "shift-day-2026-03-16"
         },
         {
           "start": "2026-03-16T12:00:00.000Z",
@@ -56,13 +66,16 @@
           "status": "downtime",
           "durationMinutes": 25,
           "reasonCategory": "Operations",
-          "reasonLabel": "Changeover delay"
+          "reasonLabel": "Changeover delay",
+          "downtimeKind": "planned",
+          "shiftId": "shift-day-2026-03-16"
         },
         {
           "start": "2026-03-16T12:25:00.000Z",
           "end": "2026-03-16T16:00:00.000Z",
           "status": "running",
-          "durationMinutes": 215
+          "durationMinutes": 215,
+          "shiftId": "shift-day-2026-03-16"
         },
         {
           "start": "2026-03-16T16:00:00.000Z",
@@ -70,13 +83,16 @@
           "status": "downtime",
           "durationMinutes": 42,
           "reasonCategory": "Material flow",
-          "reasonLabel": "Waiting on products"
+          "reasonLabel": "Waiting on products",
+          "downtimeKind": "unplanned",
+          "shiftId": "shift-evening-2026-03-16"
         },
         {
           "start": "2026-03-16T16:42:00.000Z",
           "end": "2026-03-16T18:30:00.000Z",
           "status": "running",
-          "durationMinutes": 108
+          "durationMinutes": 108,
+          "shiftId": "shift-evening-2026-03-16"
         },
         {
           "start": "2026-03-16T18:30:00.000Z",
@@ -84,104 +100,40 @@
           "status": "downtime",
           "durationMinutes": 57,
           "reasonCategory": "Controls",
-          "reasonLabel": "Sensor fault reset"
+          "reasonLabel": "Sensor fault reset",
+          "downtimeKind": "unplanned",
+          "shiftId": "shift-evening-2026-03-16"
         },
         {
           "start": "2026-03-16T19:27:00.000Z",
           "end": "2026-03-16T22:00:00.000Z",
           "status": "running",
-          "durationMinutes": 153
+          "durationMinutes": 153,
+          "shiftId": "shift-evening-2026-03-16"
         },
         {
           "start": "2026-03-16T22:00:00.000Z",
           "end": "2026-03-17T00:00:00.000Z",
           "status": "running",
-          "durationMinutes": 120
+          "durationMinutes": 120,
+          "shiftId": "shift-evening-2026-03-16"
         }
       ],
       "performanceSeries": [
-        {
-          "timestamp": "2026-03-16T00:00:00.000Z",
-          "speedUpm": 0,
-          "performance": 0,
-          "status": "stopped",
-          "cumulativeProduced": 0
-        },
-        {
-          "timestamp": "2026-03-16T03:00:00.000Z",
-          "speedUpm": 0,
-          "performance": 0,
-          "status": "stopped",
-          "cumulativeProduced": 0
-        },
-        {
-          "timestamp": "2026-03-16T06:00:00.000Z",
-          "speedUpm": 29.2,
-          "performance": 0.73,
-          "status": "running",
-          "cumulativeProduced": 5256
-        },
-        {
-          "timestamp": "2026-03-16T09:00:00.000Z",
-          "speedUpm": 30.8,
-          "performance": 0.77,
-          "status": "running",
-          "cumulativeProduced": 10792
-        },
-        {
-          "timestamp": "2026-03-16T12:00:00.000Z",
-          "speedUpm": 18.4,
-          "performance": 0.46,
-          "status": "downtime",
-          "cumulativeProduced": 14064
-        },
-        {
-          "timestamp": "2026-03-16T15:00:00.000Z",
-          "speedUpm": 31.6,
-          "performance": 0.79,
-          "status": "running",
-          "cumulativeProduced": 19752
-        },
-        {
-          "timestamp": "2026-03-16T18:00:00.000Z",
-          "speedUpm": 27.6,
-          "performance": 0.69,
-          "status": "running",
-          "cumulativeProduced": 24720
-        },
-        {
-          "timestamp": "2026-03-16T21:00:00.000Z",
-          "speedUpm": 24.1,
-          "performance": 0.6,
-          "status": "running",
-          "cumulativeProduced": 29058
-        }
+        { "timestamp": "2026-03-16T00:00:00.000Z", "speedUpm": 0, "performance": 0, "status": "stopped", "cumulativeProduced": 0 },
+        { "timestamp": "2026-03-16T03:00:00.000Z", "speedUpm": 0, "performance": 0, "status": "stopped", "cumulativeProduced": 0 },
+        { "timestamp": "2026-03-16T06:00:00.000Z", "speedUpm": 29.2, "performance": 0.73, "status": "running", "cumulativeProduced": 5256 },
+        { "timestamp": "2026-03-16T09:00:00.000Z", "speedUpm": 30.8, "performance": 0.77, "status": "running", "cumulativeProduced": 10792 },
+        { "timestamp": "2026-03-16T12:00:00.000Z", "speedUpm": 18.4, "performance": 0.46, "status": "downtime", "cumulativeProduced": 14064 },
+        { "timestamp": "2026-03-16T15:00:00.000Z", "speedUpm": 31.6, "performance": 0.79, "status": "running", "cumulativeProduced": 19752 },
+        { "timestamp": "2026-03-16T18:00:00.000Z", "speedUpm": 27.6, "performance": 0.69, "status": "running", "cumulativeProduced": 24720 },
+        { "timestamp": "2026-03-16T21:00:00.000Z", "speedUpm": 24.1, "performance": 0.6, "status": "running", "cumulativeProduced": 29058 }
       ],
       "downtimePareto": [
-        {
-          "cause": "Conveyor belt breakdown",
-          "eventCount": 1,
-          "totalMinutes": 60,
-          "impactShare": 0.326
-        },
-        {
-          "cause": "Sensor fault reset",
-          "eventCount": 1,
-          "totalMinutes": 57,
-          "impactShare": 0.31
-        },
-        {
-          "cause": "Waiting on products",
-          "eventCount": 1,
-          "totalMinutes": 42,
-          "impactShare": 0.228
-        },
-        {
-          "cause": "Changeover delay",
-          "eventCount": 1,
-          "totalMinutes": 25,
-          "impactShare": 0.136
-        }
+        { "cause": "Conveyor belt breakdown", "eventCount": 1, "totalMinutes": 60, "impactShare": 0.326, "kind": "unplanned" },
+        { "cause": "Sensor fault reset", "eventCount": 1, "totalMinutes": 57, "impactShare": 0.31, "kind": "unplanned" },
+        { "cause": "Waiting on products", "eventCount": 1, "totalMinutes": 42, "impactShare": 0.228, "kind": "unplanned" },
+        { "cause": "Changeover delay", "eventCount": 1, "totalMinutes": 25, "impactShare": 0.136, "kind": "planned" }
       ]
     },
     {
@@ -192,7 +144,8 @@
         "facilityName": "Cascade Foods - Vancouver Plant",
         "productName": "PET Bottle 500 mL",
         "unitOfMeasure": "bottles",
-        "targetUnitsPerMinute": 40
+        "targetUnitsPerMinute": 40,
+        "targetPerformance": 0.85
       },
       "range": {
         "start": "2026-03-10T00:00:00.000Z",
@@ -200,368 +153,85 @@
         "timezone": "America/Vancouver",
         "generatedAt": "2026-03-17T00:10:00.000Z"
       },
+      "shifts": [
+        { "id": "shift-day-2026-03-10", "name": "Day Shift", "startsAt": "2026-03-10T06:00:00.000Z", "endsAt": "2026-03-10T14:00:00.000Z" },
+        { "id": "shift-evening-2026-03-10", "name": "Evening Shift", "startsAt": "2026-03-10T14:00:00.000Z", "endsAt": "2026-03-10T22:00:00.000Z" },
+        { "id": "shift-day-2026-03-11", "name": "Day Shift", "startsAt": "2026-03-11T06:00:00.000Z", "endsAt": "2026-03-11T14:00:00.000Z" },
+        { "id": "shift-evening-2026-03-11", "name": "Evening Shift", "startsAt": "2026-03-11T14:00:00.000Z", "endsAt": "2026-03-11T22:00:00.000Z" },
+        { "id": "shift-day-2026-03-12", "name": "Day Shift", "startsAt": "2026-03-12T06:00:00.000Z", "endsAt": "2026-03-12T14:00:00.000Z" },
+        { "id": "shift-evening-2026-03-12", "name": "Evening Shift", "startsAt": "2026-03-12T14:00:00.000Z", "endsAt": "2026-03-12T22:00:00.000Z" },
+        { "id": "shift-day-2026-03-13", "name": "Day Shift", "startsAt": "2026-03-13T06:00:00.000Z", "endsAt": "2026-03-13T14:00:00.000Z" },
+        { "id": "shift-evening-2026-03-13", "name": "Evening Shift", "startsAt": "2026-03-13T14:00:00.000Z", "endsAt": "2026-03-13T22:00:00.000Z" },
+        { "id": "shift-day-2026-03-14", "name": "Day Shift", "startsAt": "2026-03-14T08:00:00.000Z", "endsAt": "2026-03-14T14:00:00.000Z" },
+        { "id": "shift-day-2026-03-16", "name": "Day Shift", "startsAt": "2026-03-16T06:00:00.000Z", "endsAt": "2026-03-16T14:00:00.000Z" },
+        { "id": "shift-evening-2026-03-16", "name": "Evening Shift", "startsAt": "2026-03-16T14:00:00.000Z", "endsAt": "2026-03-16T22:00:00.000Z" }
+      ],
       "summary": {
         "averageSpeedUpm": 28.4,
         "totalProduced": 286272,
         "averagePerformance": 0.71,
+        "rejectRate": 0.014,
         "totalDowntimeMinutes": 702,
         "totalStoppedMinutes": 2700
       },
       "statusTimeline": [
-        {
-          "start": "2026-03-10T00:00:00.000Z",
-          "end": "2026-03-10T06:00:00.000Z",
-          "status": "stopped",
-          "durationMinutes": 360
-        },
-        {
-          "start": "2026-03-10T06:00:00.000Z",
-          "end": "2026-03-10T10:20:00.000Z",
-          "status": "running",
-          "durationMinutes": 260
-        },
-        {
-          "start": "2026-03-10T10:20:00.000Z",
-          "end": "2026-03-10T11:05:00.000Z",
-          "status": "downtime",
-          "durationMinutes": 45,
-          "reasonCategory": "Electrical",
-          "reasonLabel": "Electrical issue"
-        },
-        {
-          "start": "2026-03-10T11:05:00.000Z",
-          "end": "2026-03-10T22:00:00.000Z",
-          "status": "running",
-          "durationMinutes": 655
-        },
-        {
-          "start": "2026-03-10T22:00:00.000Z",
-          "end": "2026-03-11T06:00:00.000Z",
-          "status": "stopped",
-          "durationMinutes": 480
-        },
-        {
-          "start": "2026-03-11T06:00:00.000Z",
-          "end": "2026-03-11T09:40:00.000Z",
-          "status": "running",
-          "durationMinutes": 220
-        },
-        {
-          "start": "2026-03-11T09:40:00.000Z",
-          "end": "2026-03-11T11:25:00.000Z",
-          "status": "downtime",
-          "durationMinutes": 105,
-          "reasonCategory": "Mechanical",
-          "reasonLabel": "Conveyor belt breakdown"
-        },
-        {
-          "start": "2026-03-11T11:25:00.000Z",
-          "end": "2026-03-11T22:00:00.000Z",
-          "status": "running",
-          "durationMinutes": 635
-        },
-        {
-          "start": "2026-03-11T22:00:00.000Z",
-          "end": "2026-03-12T06:00:00.000Z",
-          "status": "stopped",
-          "durationMinutes": 480
-        },
-        {
-          "start": "2026-03-12T06:00:00.000Z",
-          "end": "2026-03-12T12:00:00.000Z",
-          "status": "running",
-          "durationMinutes": 360
-        },
-        {
-          "start": "2026-03-12T12:00:00.000Z",
-          "end": "2026-03-12T12:38:00.000Z",
-          "status": "downtime",
-          "durationMinutes": 38,
-          "reasonCategory": "Operations",
-          "reasonLabel": "Changeover delay"
-        },
-        {
-          "start": "2026-03-12T12:38:00.000Z",
-          "end": "2026-03-12T22:00:00.000Z",
-          "status": "running",
-          "durationMinutes": 562
-        },
-        {
-          "start": "2026-03-12T22:00:00.000Z",
-          "end": "2026-03-13T06:00:00.000Z",
-          "status": "stopped",
-          "durationMinutes": 480
-        },
-        {
-          "start": "2026-03-13T06:00:00.000Z",
-          "end": "2026-03-13T14:10:00.000Z",
-          "status": "running",
-          "durationMinutes": 490
-        },
-        {
-          "start": "2026-03-13T14:10:00.000Z",
-          "end": "2026-03-13T15:05:00.000Z",
-          "status": "downtime",
-          "durationMinutes": 55,
-          "reasonCategory": "Material flow",
-          "reasonLabel": "Waiting on products"
-        },
-        {
-          "start": "2026-03-13T15:05:00.000Z",
-          "end": "2026-03-13T22:00:00.000Z",
-          "status": "running",
-          "durationMinutes": 415
-        },
-        {
-          "start": "2026-03-13T22:00:00.000Z",
-          "end": "2026-03-14T08:00:00.000Z",
-          "status": "stopped",
-          "durationMinutes": 600
-        },
-        {
-          "start": "2026-03-14T08:00:00.000Z",
-          "end": "2026-03-14T11:35:00.000Z",
-          "status": "running",
-          "durationMinutes": 215
-        },
-        {
-          "start": "2026-03-14T11:35:00.000Z",
-          "end": "2026-03-14T12:17:00.000Z",
-          "status": "downtime",
-          "durationMinutes": 42,
-          "reasonCategory": "Controls",
-          "reasonLabel": "Sensor fault reset"
-        },
-        {
-          "start": "2026-03-14T12:17:00.000Z",
-          "end": "2026-03-14T14:00:00.000Z",
-          "status": "running",
-          "durationMinutes": 103
-        },
-        {
-          "start": "2026-03-14T14:00:00.000Z",
-          "end": "2026-03-15T06:00:00.000Z",
-          "status": "stopped",
-          "durationMinutes": 960
-        },
-        {
-          "start": "2026-03-15T06:00:00.000Z",
-          "end": "2026-03-15T18:30:00.000Z",
-          "status": "stopped",
-          "durationMinutes": 750
-        },
-        {
-          "start": "2026-03-15T18:30:00.000Z",
-          "end": "2026-03-15T22:00:00.000Z",
-          "status": "running",
-          "durationMinutes": 210
-        },
-        {
-          "start": "2026-03-15T22:00:00.000Z",
-          "end": "2026-03-16T06:00:00.000Z",
-          "status": "stopped",
-          "durationMinutes": 480
-        },
-        {
-          "start": "2026-03-16T06:00:00.000Z",
-          "end": "2026-03-16T08:00:00.000Z",
-          "status": "running",
-          "durationMinutes": 120
-        },
-        {
-          "start": "2026-03-16T08:00:00.000Z",
-          "end": "2026-03-16T09:00:00.000Z",
-          "status": "downtime",
-          "durationMinutes": 60,
-          "reasonCategory": "Mechanical",
-          "reasonLabel": "Conveyor belt breakdown"
-        },
-        {
-          "start": "2026-03-16T09:00:00.000Z",
-          "end": "2026-03-16T12:00:00.000Z",
-          "status": "running",
-          "durationMinutes": 180
-        },
-        {
-          "start": "2026-03-16T12:00:00.000Z",
-          "end": "2026-03-16T12:25:00.000Z",
-          "status": "downtime",
-          "durationMinutes": 25,
-          "reasonCategory": "Operations",
-          "reasonLabel": "Changeover delay"
-        },
-        {
-          "start": "2026-03-16T12:25:00.000Z",
-          "end": "2026-03-16T16:00:00.000Z",
-          "status": "running",
-          "durationMinutes": 215
-        },
-        {
-          "start": "2026-03-16T16:00:00.000Z",
-          "end": "2026-03-16T16:42:00.000Z",
-          "status": "downtime",
-          "durationMinutes": 42,
-          "reasonCategory": "Material flow",
-          "reasonLabel": "Waiting on products"
-        },
-        {
-          "start": "2026-03-16T16:42:00.000Z",
-          "end": "2026-03-16T18:30:00.000Z",
-          "status": "running",
-          "durationMinutes": 108
-        },
-        {
-          "start": "2026-03-16T18:30:00.000Z",
-          "end": "2026-03-16T19:27:00.000Z",
-          "status": "downtime",
-          "durationMinutes": 57,
-          "reasonCategory": "Controls",
-          "reasonLabel": "Sensor fault reset"
-        },
-        {
-          "start": "2026-03-16T19:27:00.000Z",
-          "end": "2026-03-16T22:00:00.000Z",
-          "status": "running",
-          "durationMinutes": 153
-        },
-        {
-          "start": "2026-03-16T22:00:00.000Z",
-          "end": "2026-03-17T00:00:00.000Z",
-          "status": "running",
-          "durationMinutes": 120
-        }
+        { "start": "2026-03-10T00:00:00.000Z", "end": "2026-03-10T06:00:00.000Z", "status": "stopped", "durationMinutes": 360 },
+        { "start": "2026-03-10T06:00:00.000Z", "end": "2026-03-10T10:20:00.000Z", "status": "running", "durationMinutes": 260, "shiftId": "shift-day-2026-03-10" },
+        { "start": "2026-03-10T10:20:00.000Z", "end": "2026-03-10T11:05:00.000Z", "status": "downtime", "durationMinutes": 45, "reasonCategory": "Electrical", "reasonLabel": "Electrical issue", "downtimeKind": "unplanned", "shiftId": "shift-day-2026-03-10" },
+        { "start": "2026-03-10T11:05:00.000Z", "end": "2026-03-10T22:00:00.000Z", "status": "running", "durationMinutes": 655, "shiftId": "shift-evening-2026-03-10" },
+        { "start": "2026-03-10T22:00:00.000Z", "end": "2026-03-11T06:00:00.000Z", "status": "stopped", "durationMinutes": 480 },
+        { "start": "2026-03-11T06:00:00.000Z", "end": "2026-03-11T09:40:00.000Z", "status": "running", "durationMinutes": 220, "shiftId": "shift-day-2026-03-11" },
+        { "start": "2026-03-11T09:40:00.000Z", "end": "2026-03-11T11:25:00.000Z", "status": "downtime", "durationMinutes": 105, "reasonCategory": "Mechanical", "reasonLabel": "Conveyor belt breakdown", "downtimeKind": "unplanned", "shiftId": "shift-day-2026-03-11" },
+        { "start": "2026-03-11T11:25:00.000Z", "end": "2026-03-11T22:00:00.000Z", "status": "running", "durationMinutes": 635, "shiftId": "shift-evening-2026-03-11" },
+        { "start": "2026-03-11T22:00:00.000Z", "end": "2026-03-12T06:00:00.000Z", "status": "stopped", "durationMinutes": 480 },
+        { "start": "2026-03-12T06:00:00.000Z", "end": "2026-03-12T12:00:00.000Z", "status": "running", "durationMinutes": 360, "shiftId": "shift-day-2026-03-12" },
+        { "start": "2026-03-12T12:00:00.000Z", "end": "2026-03-12T12:38:00.000Z", "status": "downtime", "durationMinutes": 38, "reasonCategory": "Operations", "reasonLabel": "Changeover delay", "downtimeKind": "planned", "shiftId": "shift-day-2026-03-12" },
+        { "start": "2026-03-12T12:38:00.000Z", "end": "2026-03-12T22:00:00.000Z", "status": "running", "durationMinutes": 562, "shiftId": "shift-evening-2026-03-12" },
+        { "start": "2026-03-12T22:00:00.000Z", "end": "2026-03-13T06:00:00.000Z", "status": "stopped", "durationMinutes": 480 },
+        { "start": "2026-03-13T06:00:00.000Z", "end": "2026-03-13T14:10:00.000Z", "status": "running", "durationMinutes": 490, "shiftId": "shift-day-2026-03-13" },
+        { "start": "2026-03-13T14:10:00.000Z", "end": "2026-03-13T15:05:00.000Z", "status": "downtime", "durationMinutes": 55, "reasonCategory": "Material flow", "reasonLabel": "Waiting on products", "downtimeKind": "unplanned", "shiftId": "shift-evening-2026-03-13" },
+        { "start": "2026-03-13T15:05:00.000Z", "end": "2026-03-13T22:00:00.000Z", "status": "running", "durationMinutes": 415, "shiftId": "shift-evening-2026-03-13" },
+        { "start": "2026-03-13T22:00:00.000Z", "end": "2026-03-14T08:00:00.000Z", "status": "stopped", "durationMinutes": 600 },
+        { "start": "2026-03-14T08:00:00.000Z", "end": "2026-03-14T11:35:00.000Z", "status": "running", "durationMinutes": 215, "shiftId": "shift-day-2026-03-14" },
+        { "start": "2026-03-14T11:35:00.000Z", "end": "2026-03-14T12:17:00.000Z", "status": "downtime", "durationMinutes": 42, "reasonCategory": "Controls", "reasonLabel": "Sensor fault reset", "downtimeKind": "unplanned", "shiftId": "shift-day-2026-03-14" },
+        { "start": "2026-03-14T12:17:00.000Z", "end": "2026-03-14T14:00:00.000Z", "status": "running", "durationMinutes": 103, "shiftId": "shift-day-2026-03-14" },
+        { "start": "2026-03-14T14:00:00.000Z", "end": "2026-03-15T06:00:00.000Z", "status": "stopped", "durationMinutes": 960 },
+        { "start": "2026-03-15T06:00:00.000Z", "end": "2026-03-15T18:30:00.000Z", "status": "stopped", "durationMinutes": 750 },
+        { "start": "2026-03-15T18:30:00.000Z", "end": "2026-03-15T22:00:00.000Z", "status": "running", "durationMinutes": 210 },
+        { "start": "2026-03-15T22:00:00.000Z", "end": "2026-03-16T06:00:00.000Z", "status": "stopped", "durationMinutes": 480 },
+        { "start": "2026-03-16T06:00:00.000Z", "end": "2026-03-16T08:00:00.000Z", "status": "running", "durationMinutes": 120, "shiftId": "shift-day-2026-03-16" },
+        { "start": "2026-03-16T08:00:00.000Z", "end": "2026-03-16T09:00:00.000Z", "status": "downtime", "durationMinutes": 60, "reasonCategory": "Mechanical", "reasonLabel": "Conveyor belt breakdown", "downtimeKind": "unplanned", "shiftId": "shift-day-2026-03-16" },
+        { "start": "2026-03-16T09:00:00.000Z", "end": "2026-03-16T12:00:00.000Z", "status": "running", "durationMinutes": 180, "shiftId": "shift-day-2026-03-16" },
+        { "start": "2026-03-16T12:00:00.000Z", "end": "2026-03-16T12:25:00.000Z", "status": "downtime", "durationMinutes": 25, "reasonCategory": "Operations", "reasonLabel": "Changeover delay", "downtimeKind": "planned", "shiftId": "shift-day-2026-03-16" },
+        { "start": "2026-03-16T12:25:00.000Z", "end": "2026-03-16T16:00:00.000Z", "status": "running", "durationMinutes": 215, "shiftId": "shift-day-2026-03-16" },
+        { "start": "2026-03-16T16:00:00.000Z", "end": "2026-03-16T16:42:00.000Z", "status": "downtime", "durationMinutes": 42, "reasonCategory": "Material flow", "reasonLabel": "Waiting on products", "downtimeKind": "unplanned", "shiftId": "shift-evening-2026-03-16" },
+        { "start": "2026-03-16T16:42:00.000Z", "end": "2026-03-16T18:30:00.000Z", "status": "running", "durationMinutes": 108, "shiftId": "shift-evening-2026-03-16" },
+        { "start": "2026-03-16T18:30:00.000Z", "end": "2026-03-16T19:27:00.000Z", "status": "downtime", "durationMinutes": 57, "reasonCategory": "Controls", "reasonLabel": "Sensor fault reset", "downtimeKind": "unplanned", "shiftId": "shift-evening-2026-03-16" },
+        { "start": "2026-03-16T19:27:00.000Z", "end": "2026-03-16T22:00:00.000Z", "status": "running", "durationMinutes": 153, "shiftId": "shift-evening-2026-03-16" },
+        { "start": "2026-03-16T22:00:00.000Z", "end": "2026-03-17T00:00:00.000Z", "status": "running", "durationMinutes": 120, "shiftId": "shift-evening-2026-03-16" }
       ],
       "performanceSeries": [
-        {
-          "timestamp": "2026-03-10T00:00:00.000Z",
-          "speedUpm": 0,
-          "performance": 0,
-          "status": "stopped",
-          "cumulativeProduced": 0
-        },
-        {
-          "timestamp": "2026-03-10T12:00:00.000Z",
-          "speedUpm": 31.4,
-          "performance": 0.79,
-          "status": "running",
-          "cumulativeProduced": 22608
-        },
-        {
-          "timestamp": "2026-03-11T00:00:00.000Z",
-          "speedUpm": 0,
-          "performance": 0,
-          "status": "stopped",
-          "cumulativeProduced": 22608
-        },
-        {
-          "timestamp": "2026-03-11T12:00:00.000Z",
-          "speedUpm": 28.7,
-          "performance": 0.72,
-          "status": "running",
-          "cumulativeProduced": 43272
-        },
-        {
-          "timestamp": "2026-03-12T00:00:00.000Z",
-          "speedUpm": 0,
-          "performance": 0,
-          "status": "stopped",
-          "cumulativeProduced": 43272
-        },
-        {
-          "timestamp": "2026-03-12T12:00:00.000Z",
-          "speedUpm": 29.8,
-          "performance": 0.75,
-          "status": "running",
-          "cumulativeProduced": 64728
-        },
-        {
-          "timestamp": "2026-03-13T00:00:00.000Z",
-          "speedUpm": 0,
-          "performance": 0,
-          "status": "stopped",
-          "cumulativeProduced": 64728
-        },
-        {
-          "timestamp": "2026-03-13T12:00:00.000Z",
-          "speedUpm": 30.5,
-          "performance": 0.76,
-          "status": "running",
-          "cumulativeProduced": 86688
-        },
-        {
-          "timestamp": "2026-03-14T00:00:00.000Z",
-          "speedUpm": 0,
-          "performance": 0,
-          "status": "stopped",
-          "cumulativeProduced": 86688
-        },
-        {
-          "timestamp": "2026-03-14T12:00:00.000Z",
-          "speedUpm": 23.9,
-          "performance": 0.6,
-          "status": "running",
-          "cumulativeProduced": 103896
-        },
-        {
-          "timestamp": "2026-03-15T00:00:00.000Z",
-          "speedUpm": 0,
-          "performance": 0,
-          "status": "stopped",
-          "cumulativeProduced": 103896
-        },
-        {
-          "timestamp": "2026-03-15T12:00:00.000Z",
-          "speedUpm": 12.4,
-          "performance": 0.31,
-          "status": "stopped",
-          "cumulativeProduced": 112824
-        },
-        {
-          "timestamp": "2026-03-16T00:00:00.000Z",
-          "speedUpm": 0,
-          "performance": 0,
-          "status": "stopped",
-          "cumulativeProduced": 112824
-        },
-        {
-          "timestamp": "2026-03-16T12:00:00.000Z",
-          "speedUpm": 29.6,
-          "performance": 0.74,
-          "status": "running",
-          "cumulativeProduced": 134136
-        }
+        { "timestamp": "2026-03-10T00:00:00.000Z", "speedUpm": 0, "performance": 0, "status": "stopped", "cumulativeProduced": 0 },
+        { "timestamp": "2026-03-10T12:00:00.000Z", "speedUpm": 31.4, "performance": 0.79, "status": "running", "cumulativeProduced": 22608 },
+        { "timestamp": "2026-03-11T00:00:00.000Z", "speedUpm": 0, "performance": 0, "status": "stopped", "cumulativeProduced": 22608 },
+        { "timestamp": "2026-03-11T12:00:00.000Z", "speedUpm": 28.7, "performance": 0.72, "status": "running", "cumulativeProduced": 43272 },
+        { "timestamp": "2026-03-12T00:00:00.000Z", "speedUpm": 0, "performance": 0, "status": "stopped", "cumulativeProduced": 43272 },
+        { "timestamp": "2026-03-12T12:00:00.000Z", "speedUpm": 29.8, "performance": 0.75, "status": "running", "cumulativeProduced": 64728 },
+        { "timestamp": "2026-03-13T00:00:00.000Z", "speedUpm": 0, "performance": 0, "status": "stopped", "cumulativeProduced": 64728 },
+        { "timestamp": "2026-03-13T12:00:00.000Z", "speedUpm": 30.5, "performance": 0.76, "status": "running", "cumulativeProduced": 86688 },
+        { "timestamp": "2026-03-14T00:00:00.000Z", "speedUpm": 0, "performance": 0, "status": "stopped", "cumulativeProduced": 86688 },
+        { "timestamp": "2026-03-14T12:00:00.000Z", "speedUpm": 23.9, "performance": 0.6, "status": "running", "cumulativeProduced": 103896 },
+        { "timestamp": "2026-03-15T00:00:00.000Z", "speedUpm": 0, "performance": 0, "status": "stopped", "cumulativeProduced": 103896 },
+        { "timestamp": "2026-03-15T12:00:00.000Z", "speedUpm": 12.4, "performance": 0.31, "status": "stopped", "cumulativeProduced": 112824 },
+        { "timestamp": "2026-03-16T00:00:00.000Z", "speedUpm": 0, "performance": 0, "status": "stopped", "cumulativeProduced": 112824 },
+        { "timestamp": "2026-03-16T12:00:00.000Z", "speedUpm": 29.6, "performance": 0.74, "status": "running", "cumulativeProduced": 134136 }
       ],
       "downtimePareto": [
-        {
-          "cause": "Conveyor belt breakdown",
-          "eventCount": 2,
-          "totalMinutes": 165,
-          "impactShare": 0.235
-        },
-        {
-          "cause": "Sensor fault reset",
-          "eventCount": 2,
-          "totalMinutes": 99,
-          "impactShare": 0.141
-        },
-        {
-          "cause": "Waiting on products",
-          "eventCount": 2,
-          "totalMinutes": 97,
-          "impactShare": 0.138
-        },
-        {
-          "cause": "Electrical issue",
-          "eventCount": 1,
-          "totalMinutes": 45,
-          "impactShare": 0.064
-        },
-        {
-          "cause": "Changeover delay",
-          "eventCount": 2,
-          "totalMinutes": 63,
-          "impactShare": 0.09
-        }
+        { "cause": "Conveyor belt breakdown", "eventCount": 2, "totalMinutes": 165, "impactShare": 0.235, "kind": "unplanned" },
+        { "cause": "Sensor fault reset", "eventCount": 2, "totalMinutes": 99, "impactShare": 0.141, "kind": "unplanned" },
+        { "cause": "Waiting on products", "eventCount": 2, "totalMinutes": 97, "impactShare": 0.138, "kind": "unplanned" },
+        { "cause": "Changeover delay", "eventCount": 2, "totalMinutes": 63, "impactShare": 0.09, "kind": "planned" },
+        { "cause": "Electrical issue", "eventCount": 1, "totalMinutes": 45, "impactShare": 0.064, "kind": "unplanned" }
       ]
     },
     {
@@ -572,7 +242,8 @@
         "facilityName": "Cascade Foods - Vancouver Plant",
         "productName": "PET Bottle 500 mL",
         "unitOfMeasure": "bottles",
-        "targetUnitsPerMinute": 40
+        "targetUnitsPerMinute": 40,
+        "targetPerformance": 0.85
       },
       "range": {
         "start": "2026-02-15T00:00:00.000Z",
@@ -580,283 +251,66 @@
         "timezone": "America/Vancouver",
         "generatedAt": "2026-03-17T00:10:00.000Z"
       },
+      "shifts": [
+        { "id": "shift-week-1", "name": "Feb 17 – Feb 19 Production", "startsAt": "2026-02-17T06:00:00.000Z", "endsAt": "2026-02-19T22:00:00.000Z" },
+        { "id": "shift-week-2", "name": "Feb 23 – Feb 28 Production", "startsAt": "2026-02-23T08:00:00.000Z", "endsAt": "2026-02-28T22:00:00.000Z" },
+        { "id": "shift-week-3", "name": "Mar 2 – Mar 7 Production", "startsAt": "2026-03-02T06:00:00.000Z", "endsAt": "2026-03-07T00:00:00.000Z" },
+        { "id": "shift-week-4", "name": "Mar 9 – Mar 14 Production", "startsAt": "2026-03-09T06:00:00.000Z", "endsAt": "2026-03-14T14:00:00.000Z" },
+        { "id": "shift-week-5", "name": "Mar 15 – Mar 17 Production", "startsAt": "2026-03-15T18:30:00.000Z", "endsAt": "2026-03-17T00:00:00.000Z" }
+      ],
       "summary": {
         "averageSpeedUpm": 27.1,
         "totalProduced": 1170720,
         "averagePerformance": 0.68,
+        "rejectRate": 0.013,
         "totalDowntimeMinutes": 3630,
         "totalStoppedMinutes": 13140
       },
       "statusTimeline": [
-        {
-          "start": "2026-02-15T00:00:00.000Z",
-          "end": "2026-02-17T06:00:00.000Z",
-          "status": "stopped",
-          "durationMinutes": 3240
-        },
-        {
-          "start": "2026-02-17T06:00:00.000Z",
-          "end": "2026-02-19T18:00:00.000Z",
-          "status": "running",
-          "durationMinutes": 3600
-        },
-        {
-          "start": "2026-02-19T18:00:00.000Z",
-          "end": "2026-02-19T20:15:00.000Z",
-          "status": "downtime",
-          "durationMinutes": 135,
-          "reasonCategory": "Mechanical",
-          "reasonLabel": "Conveyor belt breakdown"
-        },
-        {
-          "start": "2026-02-19T20:15:00.000Z",
-          "end": "2026-02-22T00:00:00.000Z",
-          "status": "running",
-          "durationMinutes": 3105
-        },
-        {
-          "start": "2026-02-22T00:00:00.000Z",
-          "end": "2026-02-23T08:00:00.000Z",
-          "status": "stopped",
-          "durationMinutes": 1920
-        },
-        {
-          "start": "2026-02-23T08:00:00.000Z",
-          "end": "2026-02-26T14:00:00.000Z",
-          "status": "running",
-          "durationMinutes": 4680
-        },
-        {
-          "start": "2026-02-26T14:00:00.000Z",
-          "end": "2026-02-26T15:10:00.000Z",
-          "status": "downtime",
-          "durationMinutes": 70,
-          "reasonCategory": "Electrical",
-          "reasonLabel": "Electrical issue"
-        },
-        {
-          "start": "2026-02-26T15:10:00.000Z",
-          "end": "2026-02-28T22:00:00.000Z",
-          "status": "running",
-          "durationMinutes": 3290
-        },
-        {
-          "start": "2026-02-28T22:00:00.000Z",
-          "end": "2026-03-02T06:00:00.000Z",
-          "status": "stopped",
-          "durationMinutes": 1920
-        },
-        {
-          "start": "2026-03-02T06:00:00.000Z",
-          "end": "2026-03-05T12:00:00.000Z",
-          "status": "running",
-          "durationMinutes": 4680
-        },
-        {
-          "start": "2026-03-05T12:00:00.000Z",
-          "end": "2026-03-05T13:42:00.000Z",
-          "status": "downtime",
-          "durationMinutes": 102,
-          "reasonCategory": "Material flow",
-          "reasonLabel": "Waiting on products"
-        },
-        {
-          "start": "2026-03-05T13:42:00.000Z",
-          "end": "2026-03-07T00:00:00.000Z",
-          "status": "running",
-          "durationMinutes": 2058
-        },
-        {
-          "start": "2026-03-07T00:00:00.000Z",
-          "end": "2026-03-09T06:00:00.000Z",
-          "status": "stopped",
-          "durationMinutes": 3240
-        },
-        {
-          "start": "2026-03-09T06:00:00.000Z",
-          "end": "2026-03-12T12:00:00.000Z",
-          "status": "running",
-          "durationMinutes": 4680
-        },
-        {
-          "start": "2026-03-12T12:00:00.000Z",
-          "end": "2026-03-12T12:45:00.000Z",
-          "status": "downtime",
-          "durationMinutes": 45,
-          "reasonCategory": "Operations",
-          "reasonLabel": "Changeover delay"
-        },
-        {
-          "start": "2026-03-12T12:45:00.000Z",
-          "end": "2026-03-14T14:00:00.000Z",
-          "status": "running",
-          "durationMinutes": 2955
-        },
-        {
-          "start": "2026-03-14T14:00:00.000Z",
-          "end": "2026-03-15T18:30:00.000Z",
-          "status": "stopped",
-          "durationMinutes": 1710
-        },
-        {
-          "start": "2026-03-15T18:30:00.000Z",
-          "end": "2026-03-16T08:00:00.000Z",
-          "status": "running",
-          "durationMinutes": 810
-        },
-        {
-          "start": "2026-03-16T08:00:00.000Z",
-          "end": "2026-03-16T09:00:00.000Z",
-          "status": "downtime",
-          "durationMinutes": 60,
-          "reasonCategory": "Mechanical",
-          "reasonLabel": "Conveyor belt breakdown"
-        },
-        {
-          "start": "2026-03-16T09:00:00.000Z",
-          "end": "2026-03-16T22:00:00.000Z",
-          "status": "running",
-          "durationMinutes": 780
-        },
-        {
-          "start": "2026-03-16T22:00:00.000Z",
-          "end": "2026-03-17T00:00:00.000Z",
-          "status": "running",
-          "durationMinutes": 120
-        }
+        { "start": "2026-02-15T00:00:00.000Z", "end": "2026-02-17T06:00:00.000Z", "status": "stopped", "durationMinutes": 3240 },
+        { "start": "2026-02-17T06:00:00.000Z", "end": "2026-02-19T18:00:00.000Z", "status": "running", "durationMinutes": 3600, "shiftId": "shift-week-1" },
+        { "start": "2026-02-19T18:00:00.000Z", "end": "2026-02-19T20:15:00.000Z", "status": "downtime", "durationMinutes": 135, "reasonCategory": "Mechanical", "reasonLabel": "Conveyor belt breakdown", "downtimeKind": "unplanned", "shiftId": "shift-week-1" },
+        { "start": "2026-02-19T20:15:00.000Z", "end": "2026-02-22T00:00:00.000Z", "status": "running", "durationMinutes": 3105, "shiftId": "shift-week-1" },
+        { "start": "2026-02-22T00:00:00.000Z", "end": "2026-02-23T08:00:00.000Z", "status": "stopped", "durationMinutes": 1920 },
+        { "start": "2026-02-23T08:00:00.000Z", "end": "2026-02-26T14:00:00.000Z", "status": "running", "durationMinutes": 4680, "shiftId": "shift-week-2" },
+        { "start": "2026-02-26T14:00:00.000Z", "end": "2026-02-26T15:10:00.000Z", "status": "downtime", "durationMinutes": 70, "reasonCategory": "Electrical", "reasonLabel": "Electrical issue", "downtimeKind": "unplanned", "shiftId": "shift-week-2" },
+        { "start": "2026-02-26T15:10:00.000Z", "end": "2026-02-28T22:00:00.000Z", "status": "running", "durationMinutes": 3290, "shiftId": "shift-week-2" },
+        { "start": "2026-02-28T22:00:00.000Z", "end": "2026-03-02T06:00:00.000Z", "status": "stopped", "durationMinutes": 1920 },
+        { "start": "2026-03-02T06:00:00.000Z", "end": "2026-03-05T12:00:00.000Z", "status": "running", "durationMinutes": 4680, "shiftId": "shift-week-3" },
+        { "start": "2026-03-05T12:00:00.000Z", "end": "2026-03-05T13:42:00.000Z", "status": "downtime", "durationMinutes": 102, "reasonCategory": "Material flow", "reasonLabel": "Waiting on products", "downtimeKind": "unplanned", "shiftId": "shift-week-3" },
+        { "start": "2026-03-05T13:42:00.000Z", "end": "2026-03-07T00:00:00.000Z", "status": "running", "durationMinutes": 2058, "shiftId": "shift-week-3" },
+        { "start": "2026-03-07T00:00:00.000Z", "end": "2026-03-09T06:00:00.000Z", "status": "stopped", "durationMinutes": 3240 },
+        { "start": "2026-03-09T06:00:00.000Z", "end": "2026-03-12T12:00:00.000Z", "status": "running", "durationMinutes": 4680, "shiftId": "shift-week-4" },
+        { "start": "2026-03-12T12:00:00.000Z", "end": "2026-03-12T12:45:00.000Z", "status": "downtime", "durationMinutes": 45, "reasonCategory": "Operations", "reasonLabel": "Changeover delay", "downtimeKind": "planned", "shiftId": "shift-week-4" },
+        { "start": "2026-03-12T12:45:00.000Z", "end": "2026-03-14T14:00:00.000Z", "status": "running", "durationMinutes": 2955, "shiftId": "shift-week-4" },
+        { "start": "2026-03-14T14:00:00.000Z", "end": "2026-03-15T18:30:00.000Z", "status": "stopped", "durationMinutes": 1710 },
+        { "start": "2026-03-15T18:30:00.000Z", "end": "2026-03-16T08:00:00.000Z", "status": "running", "durationMinutes": 810, "shiftId": "shift-week-5" },
+        { "start": "2026-03-16T08:00:00.000Z", "end": "2026-03-16T09:00:00.000Z", "status": "downtime", "durationMinutes": 60, "reasonCategory": "Mechanical", "reasonLabel": "Conveyor belt breakdown", "downtimeKind": "unplanned", "shiftId": "shift-week-5" },
+        { "start": "2026-03-16T09:00:00.000Z", "end": "2026-03-16T22:00:00.000Z", "status": "running", "durationMinutes": 780, "shiftId": "shift-week-5" },
+        { "start": "2026-03-16T22:00:00.000Z", "end": "2026-03-17T00:00:00.000Z", "status": "running", "durationMinutes": 120, "shiftId": "shift-week-5" }
       ],
       "performanceSeries": [
-        {
-          "timestamp": "2026-02-15T00:00:00.000Z",
-          "speedUpm": 0,
-          "performance": 0,
-          "status": "stopped",
-          "cumulativeProduced": 0
-        },
-        {
-          "timestamp": "2026-02-17T12:00:00.000Z",
-          "speedUpm": 30.1,
-          "performance": 0.75,
-          "status": "running",
-          "cumulativeProduced": 43344
-        },
-        {
-          "timestamp": "2026-02-19T12:00:00.000Z",
-          "speedUpm": 31.2,
-          "performance": 0.78,
-          "status": "running",
-          "cumulativeProduced": 88272
-        },
-        {
-          "timestamp": "2026-02-21T12:00:00.000Z",
-          "speedUpm": 28.4,
-          "performance": 0.71,
-          "status": "running",
-          "cumulativeProduced": 129168
-        },
-        {
-          "timestamp": "2026-02-23T12:00:00.000Z",
-          "speedUpm": 29.6,
-          "performance": 0.74,
-          "status": "running",
-          "cumulativeProduced": 171792
-        },
-        {
-          "timestamp": "2026-02-25T12:00:00.000Z",
-          "speedUpm": 30.8,
-          "performance": 0.77,
-          "status": "running",
-          "cumulativeProduced": 216144
-        },
-        {
-          "timestamp": "2026-02-27T12:00:00.000Z",
-          "speedUpm": 26.9,
-          "performance": 0.67,
-          "status": "running",
-          "cumulativeProduced": 254880
-        },
-        {
-          "timestamp": "2026-03-01T12:00:00.000Z",
-          "speedUpm": 0,
-          "performance": 0,
-          "status": "stopped",
-          "cumulativeProduced": 254880
-        },
-        {
-          "timestamp": "2026-03-03T12:00:00.000Z",
-          "speedUpm": 29.1,
-          "performance": 0.73,
-          "status": "running",
-          "cumulativeProduced": 296784
-        },
-        {
-          "timestamp": "2026-03-05T12:00:00.000Z",
-          "speedUpm": 24.8,
-          "performance": 0.62,
-          "status": "downtime",
-          "cumulativeProduced": 332496
-        },
-        {
-          "timestamp": "2026-03-07T12:00:00.000Z",
-          "speedUpm": 0,
-          "performance": 0,
-          "status": "stopped",
-          "cumulativeProduced": 349728
-        },
-        {
-          "timestamp": "2026-03-09T12:00:00.000Z",
-          "speedUpm": 28.8,
-          "performance": 0.72,
-          "status": "running",
-          "cumulativeProduced": 391200
-        },
-        {
-          "timestamp": "2026-03-11T12:00:00.000Z",
-          "speedUpm": 29.9,
-          "performance": 0.75,
-          "status": "running",
-          "cumulativeProduced": 434256
-        },
-        {
-          "timestamp": "2026-03-13T12:00:00.000Z",
-          "speedUpm": 27.6,
-          "performance": 0.69,
-          "status": "running",
-          "cumulativeProduced": 473760
-        },
-        {
-          "timestamp": "2026-03-15T12:00:00.000Z",
-          "speedUpm": 12.9,
-          "performance": 0.32,
-          "status": "stopped",
-          "cumulativeProduced": 492336
-        }
+        { "timestamp": "2026-02-15T00:00:00.000Z", "speedUpm": 0, "performance": 0, "status": "stopped", "cumulativeProduced": 0 },
+        { "timestamp": "2026-02-17T12:00:00.000Z", "speedUpm": 30.1, "performance": 0.75, "status": "running", "cumulativeProduced": 43344 },
+        { "timestamp": "2026-02-19T12:00:00.000Z", "speedUpm": 31.2, "performance": 0.78, "status": "running", "cumulativeProduced": 88272 },
+        { "timestamp": "2026-02-21T12:00:00.000Z", "speedUpm": 28.4, "performance": 0.71, "status": "running", "cumulativeProduced": 129168 },
+        { "timestamp": "2026-02-23T12:00:00.000Z", "speedUpm": 29.6, "performance": 0.74, "status": "running", "cumulativeProduced": 171792 },
+        { "timestamp": "2026-02-25T12:00:00.000Z", "speedUpm": 30.8, "performance": 0.77, "status": "running", "cumulativeProduced": 216144 },
+        { "timestamp": "2026-02-27T12:00:00.000Z", "speedUpm": 26.9, "performance": 0.67, "status": "running", "cumulativeProduced": 254880 },
+        { "timestamp": "2026-03-01T12:00:00.000Z", "speedUpm": 0, "performance": 0, "status": "stopped", "cumulativeProduced": 254880 },
+        { "timestamp": "2026-03-03T12:00:00.000Z", "speedUpm": 29.1, "performance": 0.73, "status": "running", "cumulativeProduced": 296784 },
+        { "timestamp": "2026-03-05T12:00:00.000Z", "speedUpm": 24.8, "performance": 0.62, "status": "downtime", "cumulativeProduced": 332496 },
+        { "timestamp": "2026-03-07T12:00:00.000Z", "speedUpm": 0, "performance": 0, "status": "stopped", "cumulativeProduced": 349728 },
+        { "timestamp": "2026-03-09T12:00:00.000Z", "speedUpm": 28.8, "performance": 0.72, "status": "running", "cumulativeProduced": 391200 },
+        { "timestamp": "2026-03-11T12:00:00.000Z", "speedUpm": 29.9, "performance": 0.75, "status": "running", "cumulativeProduced": 434256 },
+        { "timestamp": "2026-03-13T12:00:00.000Z", "speedUpm": 27.6, "performance": 0.69, "status": "running", "cumulativeProduced": 473760 },
+        { "timestamp": "2026-03-15T12:00:00.000Z", "speedUpm": 12.9, "performance": 0.32, "status": "stopped", "cumulativeProduced": 492336 }
       ],
       "downtimePareto": [
-        {
-          "cause": "Conveyor belt breakdown",
-          "eventCount": 2,
-          "totalMinutes": 195,
-          "impactShare": 0.247
-        },
-        {
-          "cause": "Waiting on products",
-          "eventCount": 1,
-          "totalMinutes": 102,
-          "impactShare": 0.129
-        },
-        {
-          "cause": "Electrical issue",
-          "eventCount": 1,
-          "totalMinutes": 70,
-          "impactShare": 0.089
-        },
-        {
-          "cause": "Changeover delay",
-          "eventCount": 1,
-          "totalMinutes": 45,
-          "impactShare": 0.057
-        }
+        { "cause": "Conveyor belt breakdown", "eventCount": 2, "totalMinutes": 195, "impactShare": 0.247, "kind": "unplanned" },
+        { "cause": "Waiting on products", "eventCount": 1, "totalMinutes": 102, "impactShare": 0.129, "kind": "unplanned" },
+        { "cause": "Electrical issue", "eventCount": 1, "totalMinutes": 70, "impactShare": 0.089, "kind": "unplanned" },
+        { "cause": "Changeover delay", "eventCount": 1, "totalMinutes": 45, "impactShare": 0.057, "kind": "planned" }
       ]
     }
   ]

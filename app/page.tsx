@@ -1,4 +1,11 @@
-import { AlertTriangle, TriangleAlert, Wrench } from "lucide-react";
+import {
+  AlertTriangle,
+  CalendarClock,
+  CircleDot,
+  PauseCircle,
+  TriangleAlert,
+  Wrench,
+} from "lucide-react";
 import { connection } from "next/server";
 
 import { AppShell } from "@/components/app-shell";
@@ -16,6 +23,13 @@ import {
 } from "@/lib/format";
 import { fetchReport } from "@/lib/report-api";
 import { resolvePageRange } from "@/lib/report-data";
+import type { LineStatus } from "@/types/report";
+
+const statusAccent: Record<LineStatus, { bar: string; dot: string; icon: typeof CircleDot }> = {
+  running: { bar: "bg-emerald-500", dot: "bg-emerald-500", icon: CircleDot },
+  downtime: { bar: "bg-amber-500", dot: "bg-amber-500", icon: AlertTriangle },
+  stopped: { bar: "bg-slate-400", dot: "bg-slate-400", icon: PauseCircle },
+};
 
 export default async function Page({
   searchParams,
@@ -56,15 +70,24 @@ export default async function Page({
   const report = await fetchReport(range.start.toISOString(), range.end.toISOString());
   const isEmpty = report.summary.totalProduced === 0 && report.summary.totalDowntimeMinutes === 0;
   const currentStatusSegment = report.statusTimeline.at(-1);
-  const currentStatus = currentStatusSegment?.status ?? "stopped";
+  const currentStatus: LineStatus = currentStatusSegment?.status ?? "stopped";
   const currentStatusLabel =
-    currentStatus === "running" ? "Running" : currentStatus === "downtime" ? "In downtime" : "Stopped";
+    currentStatus === "running"
+      ? "Running"
+      : currentStatus === "downtime"
+        ? currentStatusSegment?.downtimeKind === "planned"
+          ? "Planned downtime"
+          : "Unplanned downtime"
+        : "Stopped";
   const currentStatusDetail =
     currentStatus === "running"
       ? "The line is currently producing products."
       : currentStatus === "downtime"
-        ? "The line is currently in unplanned downtime."
-        : "The line is currently stopped.";
+        ? currentStatusSegment?.downtimeKind === "planned"
+          ? "The line is currently in a planned downtime window."
+          : "The line is currently in unplanned downtime."
+        : "The line is currently stopped (scheduled off).";
+  const StatusIcon = statusAccent[currentStatus].icon;
 
   return (
     <AppShell
@@ -83,34 +106,18 @@ export default async function Page({
                 {report.line.name}
               </h2>
               <p className="mt-2 max-w-3xl text-sm text-slate-500">
-                {formatDateLabel(report.range.start)} to {formatDateLabel(report.range.end)} • Generated {formatDateTimeLabel(report.range.generatedAt)} • {report.line.productName}
+                {formatDateLabel(report.range.start)} to {formatDateLabel(report.range.end)} • Generated {formatDateTimeLabel(report.range.generatedAt)} • {report.line.productName} • {report.range.timezone}
               </p>
             </div>
 
             <div className="overflow-hidden rounded-[18px] border border-slate-200 bg-white">
-              <div
-                className={`h-1.5 w-full ${
-                  currentStatus === "running"
-                    ? "bg-emerald-500"
-                    : currentStatus === "downtime"
-                      ? "bg-amber-500"
-                      : "bg-slate-400"
-                }`}
-              />
+              <div className={`h-1.5 w-full ${statusAccent[currentStatus].bar}`} />
               <div className="p-4">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Current status</p>
                 <div className="mt-3 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span
-                        className={`inline-block h-2.5 w-2.5 rounded-full ${
-                          currentStatus === "running"
-                            ? "bg-emerald-500"
-                            : currentStatus === "downtime"
-                              ? "bg-amber-500"
-                              : "bg-slate-400"
-                        }`}
-                      />
+                      <StatusIcon className={`h-5 w-5 ${currentStatus === "running" ? "text-emerald-600" : currentStatus === "downtime" ? "text-amber-600" : "text-slate-500"}`} aria-hidden="true" />
                       <p className="text-2xl font-semibold text-slate-950">{currentStatusLabel}</p>
                     </div>
                     <p className="mt-1 text-sm text-slate-600">{currentStatusDetail}</p>
@@ -141,6 +148,9 @@ export default async function Page({
                 <div>
                   <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Performance</p>
                   <h3 className="mt-1.5 text-lg font-semibold text-slate-950">Performance over selected range</h3>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Target {formatPercent(report.line.targetPerformance)} • Availability excludes planned downtime
+                  </p>
                 </div>
                 <div className="flex flex-wrap gap-2 text-xs text-slate-500">
                   <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5">
@@ -164,17 +174,22 @@ export default async function Page({
                 <MetricCard
                   label="Total produced"
                   value={formatNumber(report.summary.totalProduced)}
-                  hint={report.line.unitOfMeasure}
+                  hint={`${formatNumber(report.summary.goodUnits)} good • ${formatNumber(report.summary.rejectedUnits)} rejected`}
                 />
                 <MetricCard
                   label="Average performance"
                   value={formatPercent(report.summary.averagePerformance)}
-                  hint="Compared to max speed"
+                  hint={`Target ${formatPercent(report.line.targetPerformance)}`}
                 />
               </div>
 
               <div className="mt-4 rounded-[18px] border border-slate-200 bg-white p-4">
-                <PerformanceChart data={report.performanceSeries} />
+                <PerformanceChart
+                  data={report.performanceSeries}
+                  targetPerformance={report.line.targetPerformance}
+                  rangeStart={report.range.start}
+                  rangeEnd={report.range.end}
+                />
               </div>
             </article>
           </div>
@@ -195,16 +210,26 @@ export default async function Page({
                 <article className="rounded-[22px] border border-slate-200 bg-slate-50 p-4">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Status plan</p>
-                      <h3 className="mt-1.5 text-lg font-semibold text-slate-950">Line status over time</h3>
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Status over time</p>
+                      <h3 className="mt-1.5 text-lg font-semibold text-slate-950">Line status over selected range</h3>
+                      <p className="mt-1 text-xs text-slate-500">Hover a segment to see its time window and cause.</p>
                     </div>
-                    <div className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-500">
-                      {formatDuration(report.summary.totalDowntimeMinutes)} downtime
+                    <div className="flex flex-wrap gap-2 text-xs text-slate-500">
+                      <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-amber-700">
+                        {formatDuration(report.summary.totalUnplannedDowntimeMinutes)} unplanned
+                      </span>
+                      <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 text-violet-700">
+                        {formatDuration(report.summary.totalPlannedDowntimeMinutes)} planned
+                      </span>
                     </div>
                   </div>
 
                   <div className="mt-5">
-                    <StatusTimeline segments={report.statusTimeline} />
+                    <StatusTimeline
+                      segments={report.statusTimeline}
+                      rangeStart={report.range.start}
+                      rangeEnd={report.range.end}
+                    />
                   </div>
                 </article>
               </div>
@@ -230,37 +255,52 @@ export default async function Page({
                     ) : (
                       report.downtimePareto.map((event, index) => {
                         const sampleEvent = report.downtimeEvents.find((item) => item.cause === event.cause);
+                        const isPlanned = event.kind === "planned";
+                        const KindIcon = isPlanned ? CalendarClock : AlertTriangle;
 
                         return (
-                        <div key={event.cause} className="rounded-2xl border border-slate-200 bg-white p-4">
-                          <div className="flex items-start justify-between gap-4">
-                            <div>
-                              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">#{index + 1} cause</p>
-                              <h4 className="mt-1 text-base font-semibold text-slate-950">{event.cause}</h4>
-                              <p className="mt-2 text-sm text-slate-500">
-                                {event.eventCount} {event.eventCount === 1 ? "event" : "events"} • {formatDuration(event.totalMinutes)}
-                              </p>
-                              {sampleEvent ? (
-                                <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-500">
-                                  <span className="rounded-full bg-slate-100 px-2.5 py-1">{sampleEvent.category}</span>
-                                  <span className="rounded-full bg-slate-100 px-2.5 py-1">{sampleEvent.source.toUpperCase()}</span>
-                                  {sampleEvent.faultCode ? (
-                                    <span className="rounded-full bg-slate-100 px-2.5 py-1">{sampleEvent.faultCode}</span>
-                                  ) : null}
+                          <div key={event.cause} className="rounded-2xl border border-slate-200 bg-white p-4">
+                            <div className="flex items-start justify-between gap-4">
+                              <div>
+                                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">#{index + 1} cause</p>
+                                <div className="mt-1 flex items-center gap-2">
+                                  <h4 className="text-base font-semibold text-slate-950">{event.cause}</h4>
+                                  <span
+                                    className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.1em] ${
+                                      isPlanned
+                                        ? "border-violet-200 bg-violet-50 text-violet-700"
+                                        : "border-amber-200 bg-amber-50 text-amber-700"
+                                    }`}
+                                  >
+                                    <KindIcon className="h-3 w-3" aria-hidden="true" />
+                                    {isPlanned ? "Planned" : "Unplanned"}
+                                  </span>
                                 </div>
-                              ) : null}
+                                <p className="mt-2 text-sm text-slate-500">
+                                  {event.eventCount} {event.eventCount === 1 ? "event" : "events"} • {formatDuration(event.totalMinutes)}
+                                </p>
+                                {sampleEvent ? (
+                                  <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-500">
+                                    <span className="rounded-full bg-slate-100 px-2.5 py-1">{sampleEvent.category}</span>
+                                    <span className="rounded-full bg-slate-100 px-2.5 py-1">{sampleEvent.source.toUpperCase()}</span>
+                                    {sampleEvent.faultCode ? (
+                                      <span className="rounded-full bg-slate-100 px-2.5 py-1">{sampleEvent.faultCode}</span>
+                                    ) : null}
+                                  </div>
+                                ) : null}
+                              </div>
+                              <div className="font-metric text-3xl text-slate-950">{formatPercent(event.impactShare)}</div>
                             </div>
-                            <div className="font-metric text-3xl text-slate-950">{formatPercent(event.impactShare)}</div>
-                          </div>
 
-                          <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-slate-200">
-                            <div
-                              className="h-full rounded-full bg-gradient-to-r from-[#8aa8eb] via-[#b9b3f6] to-[#e39cb8]"
-                              style={{ width: `${Math.max(event.impactShare * 100, 6)}%` }}
-                            />
+                            <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-slate-200">
+                              <div
+                                className={`h-full rounded-full ${isPlanned ? "bg-violet-400" : "bg-amber-400"}`}
+                                style={{ width: `${Math.max(event.impactShare * 100, 6)}%` }}
+                              />
+                            </div>
                           </div>
-                        </div>
-                      )})
+                        );
+                      })
                     )}
                   </div>
                 </article>
