@@ -13,20 +13,34 @@ import {
   X,
 } from "lucide-react";
 import { ContentTransitionSkeleton } from "@/components/content-transition-skeleton";
+import { formatHeaderTime } from "@/lib/format";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { useState } from "react";
+import type { IconKey, ShellContent } from "@/types/content";
 
 type AppShellProps = {
   children: ReactNode;
   generatedAt: string;
   facilityName: string;
   lineName: string;
+  shellContent: ShellContent;
 };
 
-export function AppShell({ children, generatedAt, facilityName, lineName }: AppShellProps) {
+const iconMap: Record<IconKey, typeof LayoutGrid> = {
+  layoutGrid: LayoutGrid,
+  blocks: Blocks,
+  list: List,
+  squareCheckBig: SquareCheckBig,
+  inbox: Inbox,
+  slidersHorizontal: SlidersHorizontal,
+  settings: Settings,
+  helpCircle: HelpCircle,
+};
+
+export function AppShell({ children, generatedAt, facilityName, lineName, shellContent }: AppShellProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [pendingHref, setPendingHref] = useState<string | null>(null);
   const pathname = usePathname();
@@ -39,15 +53,6 @@ export function AppShell({ children, generatedAt, facilityName, lineName }: AppS
       setPendingHref(href);
     }
   }
-
-  const navItems = [
-    { label: "Dashboard", icon: LayoutGrid, href: "/" },
-    { label: "Department", icon: Blocks, href: "/supervisor-view" },
-    { label: "Production", icon: List, href: "/live-line" },
-    { label: "Task", icon: SquareCheckBig, href: "/batch-log" },
-    { label: "Inbox", icon: Inbox, href: "/downtime" },
-    { label: "Control", icon: SlidersHorizontal, href: "/facility-map" },
-  ];
 
   return (
     <div className="h-screen overflow-hidden bg-[var(--color-background)] text-[var(--color-ink)]">
@@ -72,7 +77,7 @@ export function AppShell({ children, generatedAt, facilityName, lineName }: AppS
                 <div className="flex items-center">
                   <Image
                     src="/iotlogo.png"
-                    alt="ioTORQ LEAN logo"
+                    alt={shellContent.brand.logoAlt}
                     width={150}
                     height={42}
                     className="h-auto w-[150px] object-contain"
@@ -90,11 +95,11 @@ export function AppShell({ children, generatedAt, facilityName, lineName }: AppS
 
             <nav className="min-h-0 flex-1 px-4 py-5">
               <p className="mb-3 px-3 text-[11px] font-medium uppercase tracking-[0.18em] text-slate-400">
-                Main
+                {shellContent.navigation.mainSectionLabel}
               </p>
               <ul className="space-y-1.5">
-                {navItems.map((item) => {
-                  const Icon = item.icon;
+                {shellContent.navigation.mainItems.map((item) => {
+                  const Icon = iconMap[item.iconKey];
                   const isActive =
                     item.href === "/" ? pathname === "/" : pathname === item.href || pathname.startsWith(`${item.href}/`);
 
@@ -123,26 +128,22 @@ export function AppShell({ children, generatedAt, facilityName, lineName }: AppS
 
             <div className="border-t border-[#eef1f5] px-4 py-4">
               <ul className="space-y-1">
-                <li>
-                  <Link
-                    href="/settings"
-                    onClick={() => handleNavClick("/settings")}
-                    className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-[15px] font-medium text-[#5e6778] transition-colors duration-200 hover:bg-[#f8fafc] hover:text-[#111827]"
-                  >
-                    <Settings className="h-[19px] w-[19px] text-[#697385]" />
-                    Settings
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/help"
-                    onClick={() => handleNavClick("/help")}
-                    className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-[15px] font-medium text-[#5e6778] transition-colors duration-200 hover:bg-[#f8fafc] hover:text-[#111827]"
-                  >
-                    <HelpCircle className="h-[19px] w-[19px] text-[#697385]" />
-                    Help & Support
-                  </Link>
-                </li>
+                {shellContent.navigation.footerItems.map((item) => {
+                  const Icon = iconMap[item.iconKey];
+
+                  return (
+                    <li key={item.label}>
+                      <Link
+                        href={item.href}
+                        onClick={() => handleNavClick(item.href)}
+                        className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-[15px] font-medium text-[#5e6778] transition-colors duration-200 hover:bg-[#f8fafc] hover:text-[#111827]"
+                      >
+                        <Icon className="h-[19px] w-[19px] text-[#697385]" />
+                        {item.label}
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           </aside>
@@ -159,7 +160,7 @@ export function AppShell({ children, generatedAt, facilityName, lineName }: AppS
                     <Menu className="h-5 w-5" />
                   </button>
                   <div className="min-w-0">
-                    <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">ioTORQ LEAN</p>
+                    <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">{shellContent.brand.headerEyebrow}</p>
                     <div className="mt-0.5 flex min-w-0 flex-col gap-0.5 lg:flex-row lg:items-baseline lg:gap-3">
                       <p className="truncate text-[16px] font-semibold text-slate-900 md:text-[18px]">{lineName}</p>
                       <p className="truncate text-[13px] text-slate-500">{facilityName}</p>
@@ -170,10 +171,10 @@ export function AppShell({ children, generatedAt, facilityName, lineName }: AppS
                 <div className="inline-flex items-center gap-2 self-start rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1.5 lg:self-auto">
                   <div className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
                   <div className="text-left">
-                    <p className="text-[12px] font-medium leading-none text-slate-700">Live report</p>
+                    <p className="text-[12px] font-medium leading-none text-slate-700">{shellContent.brand.liveBadgeLabel}</p>
                   </div>
                   <span className="text-[12px] text-slate-500">
-                    {new Intl.DateTimeFormat("en-CA", { hour: "numeric", minute: "2-digit" }).format(new Date(generatedAt))}
+                    {formatHeaderTime(generatedAt)}
                   </span>
                 </div>
               </div>

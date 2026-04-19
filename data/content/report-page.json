@@ -1,0 +1,114 @@
+{
+  "invalidRange": {
+    "badgeLabel": "Invalid report range",
+    "title": "We could not generate that report."
+  },
+  "filterBar": {
+    "badgeLabel": "Report range",
+    "helperText": "Review production performance, downtime impact, and line status over the selected period.",
+    "startLabel": "Start",
+    "endLabel": "End",
+    "submitLabel": "Generate report",
+    "pendingLabel": "Refreshing...",
+    "presets": {
+      "24h": "Last 24h",
+      "7d": "Last 7d",
+      "30d": "Last 30d"
+    }
+  },
+  "header": {
+    "eyebrow": "Current production report",
+    "generatedLabel": "Generated"
+  },
+  "currentStatus": {
+    "eyebrow": "Current status",
+    "currentBlockLabel": "Current block",
+    "causeLabel": "Cause"
+  },
+  "performance": {
+    "eyebrow": "Performance",
+    "title": "Performance over selected range",
+    "helperTextSuffix": "Availability excludes planned downtime",
+    "pills": {
+      "availability": "Availability",
+      "quality": "Quality",
+      "oee": "OEE"
+    }
+  },
+  "metrics": {
+    "averageSpeed": {
+      "label": "Average speed",
+      "tooltip": "Average units per minute across the selected report range.",
+      "hintPrefix": "Target"
+    },
+    "totalProduced": {
+      "label": "Total produced",
+      "tooltip": "Total units counted during the selected range, including both good and rejected output.",
+      "hintPrefix": ""
+    },
+    "averagePerformance": {
+      "label": "Average performance",
+      "tooltip": "Average actual line speed as a share of the configured target speed.",
+      "hintPrefix": "Target"
+    },
+    "totalProducedHint": {
+      "goodLabel": "good",
+      "rejectedLabel": "rejected",
+      "separator": " • "
+    }
+  },
+  "emptyState": {
+    "title": "No production activity in this range",
+    "description": "The selected period appears to contain only scheduled stop time. Try a weekday or a broader range to surface running and downtime events."
+  },
+  "statusTimeline": {
+    "eyebrow": "Status over time",
+    "title": "Line status over selected range",
+    "helperText": "Hover a segment to see its time window and cause.",
+    "pills": {
+      "unplanned": "unplanned",
+      "planned": "planned"
+    },
+    "labels": {
+      "running": "Running",
+      "unplanned": "Unplanned downtime",
+      "planned": "Planned downtime",
+      "stopped": "Stopped (scheduled off)"
+    }
+  },
+  "downtime": {
+    "eyebrow": "Downtime ranking",
+    "title": "Most common downtime events",
+    "rankedByImpactLabel": "Ranked by impact",
+    "noEventsText": "No downtime events occurred during the selected range.",
+    "causeEyebrowSuffix": "cause",
+    "eventLabelSingular": "event",
+    "eventLabelPlural": "events",
+    "kindLabels": {
+      "planned": "Planned",
+      "unplanned": "Unplanned"
+    }
+  },
+  "statusMix": {
+    "eyebrow": "Summary",
+    "title": "Status mix",
+    "centerLabel": "Running share",
+    "rangeHint": "of selected range",
+    "labels": {
+      "running": "Running",
+      "unplanned": "Unplanned downtime",
+      "planned": "Planned downtime",
+      "stopped": "Stopped"
+    }
+  },
+  "tooltips": {
+    "availability": "Availability is runtime divided by planned production time. Planned downtime is excluded.",
+    "quality": "Quality is good output divided by total produced output.",
+    "oee": "Overall equipment effectiveness calculated as availability multiplied by performance multiplied by quality.",
+    "currentBlock": "Length of the current running, downtime, or stopped block.",
+    "currentCause": "Primary reason attached to the current downtime or delay block.",
+    "unplannedDowntime": "Total time lost to unplanned downtime during the selected range.",
+    "plannedDowntime": "Total time spent in planned downtime during the selected range.",
+    "rankedByImpact": "Downtime causes are ordered by total lost time across the selected range."
+  }
+}

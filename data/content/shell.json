@@ -1,0 +1,24 @@
+{
+  "brand": {
+    "logoAlt": "Dashboard logo",
+    "headerEyebrow": "ioTORQ LEAN",
+    "liveBadgeLabel": "Live report",
+    "defaultFacilityName": "Cascade Foods - Vancouver Plant",
+    "defaultLineName": "Packaging Line 1"
+  },
+  "navigation": {
+    "mainSectionLabel": "Main",
+    "mainItems": [
+      { "label": "Dashboard", "href": "/", "iconKey": "layoutGrid" },
+      { "label": "Department", "href": "/supervisor-view", "iconKey": "blocks" },
+      { "label": "Production", "href": "/live-line", "iconKey": "list" },
+      { "label": "Task", "href": "/batch-log", "iconKey": "squareCheckBig" },
+      { "label": "Inbox", "href": "/downtime", "iconKey": "inbox" },
+      { "label": "Control", "href": "/facility-map", "iconKey": "slidersHorizontal" }
+    ],
+    "footerItems": [
+      { "label": "Settings", "href": "/settings", "iconKey": "settings" },
+      { "label": "Help & Support", "href": "/help", "iconKey": "helpCircle" }
+    ]
+  }
+}

@@ -5,12 +5,14 @@ import type { ComponentType, SVGProps } from "react";
 
 import { formatAdaptiveTick, formatDateTimeLabel, formatDuration } from "@/lib/format";
 import { getStatusDisplayLabel } from "@/lib/report-data";
+import type { ReportPageContent } from "@/types/content";
 import type { DowntimeKind, LineStatus, ReportResponse, StatusSegment } from "@/types/report";
 
 type StatusTimelineProps = {
   segments: ReportResponse["statusTimeline"];
   rangeStart: string;
   rangeEnd: string;
+  labels: ReportPageContent["statusTimeline"]["labels"];
 };
 
 type VisualKey = "running" | "unplanned" | "planned" | "stopped";
@@ -21,7 +23,6 @@ const visuals: Record<
     label: string;
     color: string;
     barClass: string;
-    softClass: string;
     icon: ComponentType<SVGProps<SVGSVGElement>>;
     patternId: string;
   }
@@ -30,7 +31,6 @@ const visuals: Record<
     label: "Running",
     color: "#10b981",
     barClass: "bg-emerald-500",
-    softClass: "bg-emerald-50 text-emerald-700 border-emerald-200",
     icon: CircleDot,
     patternId: "pattern-running",
   },
@@ -38,7 +38,6 @@ const visuals: Record<
     label: "Unplanned downtime",
     color: "#f59e0b",
     barClass: "bg-amber-500",
-    softClass: "bg-amber-50 text-amber-700 border-amber-200",
     icon: AlertTriangle,
     patternId: "pattern-unplanned",
   },
@@ -46,7 +45,6 @@ const visuals: Record<
     label: "Planned downtime",
     color: "#8b5cf6",
     barClass: "bg-violet-500",
-    softClass: "bg-violet-50 text-violet-700 border-violet-200",
     icon: CalendarClock,
     patternId: "pattern-planned",
   },
@@ -54,7 +52,6 @@ const visuals: Record<
     label: "Stopped (scheduled off)",
     color: "#94a3b8",
     barClass: "bg-slate-400",
-    softClass: "bg-slate-100 text-slate-700 border-slate-200",
     icon: PauseCircle,
     patternId: "pattern-stopped",
   },
@@ -70,7 +67,7 @@ function sumBy(segments: StatusSegment[], predicate: (segment: StatusSegment) =>
   return segments.filter(predicate).reduce((sum, segment) => sum + segment.durationMinutes, 0);
 }
 
-export function StatusTimeline({ segments, rangeStart, rangeEnd }: StatusTimelineProps) {
+export function StatusTimeline({ segments, rangeStart, rangeEnd, labels }: StatusTimelineProps) {
   const rangeStartMs = new Date(rangeStart).getTime();
   const rangeEndMs = new Date(rangeEnd).getTime();
   const totalMs = Math.max(rangeEndMs - rangeStartMs, 1);
@@ -113,7 +110,7 @@ export function StatusTimeline({ segments, rangeStart, rangeEnd }: StatusTimelin
           );
           const key = visualKeyFor(segment);
           const visual = visuals[key];
-          const tooltip = buildTooltip(segment, visual.label);
+          const tooltip = buildTooltip(segment, labels[key]);
 
           return (
             <div
@@ -137,21 +134,29 @@ export function StatusTimeline({ segments, rangeStart, rangeEnd }: StatusTimelin
       <div className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
         {legendTotals.map(({ key, minutes }) => {
           const visual = visuals[key];
-          const Icon = visual.icon;
           const pct = Math.round((minutes / legendDenominator) * 100);
 
           return (
             <div
               key={key}
-              className={`flex items-start gap-3 rounded-2xl border px-3 py-3 ${visual.softClass}`}
+              className="rounded-[18px] border border-slate-200 bg-white px-4 py-3.5 shadow-sm"
+              title={`${visual.label}: ${formatDuration(minutes)} across ${pct}% of the selected range.`}
             >
-              <Icon className="mt-0.5 h-4 w-4" aria-hidden="true" />
-              <div className="flex-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.14em]">{visual.label}</p>
-                <div className="mt-1 flex items-baseline justify-between gap-2">
-                  <span className="font-metric text-2xl text-slate-950">{formatDuration(minutes)}</span>
-                  <span className="text-xs text-slate-600">{pct}%</span>
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="h-2.5 w-2.5 rounded-full"
+                      style={{ backgroundColor: visual.color }}
+                      aria-hidden="true"
+                    />
+                    <p className="truncate text-[12px] font-medium text-slate-600">{labels[key]}</p>
+                  </div>
+                  <p className="mt-3 font-metric text-[28px] leading-none text-slate-950">
+                    {formatDuration(minutes)}
+                  </p>
                 </div>
+                <p className="pt-0.5 text-sm font-medium text-slate-400">{pct}%</p>
               </div>
             </div>
           );

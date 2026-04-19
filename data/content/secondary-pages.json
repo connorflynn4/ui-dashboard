@@ -1,0 +1,121 @@
+{
+  "liveLine": {
+    "eyebrow": "Live monitoring",
+    "title": "Live line view",
+    "description": "A real-time operator-facing screen would focus on the current shift, live count rate, active status, and fast acknowledgement of downtime conditions.",
+    "bullets": [
+      "Show current line state with second-by-second product count updates.",
+      "Surface live alerts when speed drops or unplanned downtime begins.",
+      "Keep the layout touch-friendly for tablets on the shop floor."
+    ],
+    "panels": {
+      "purposeTitle": "Purpose",
+      "noteTitle": "View note",
+      "noteBody": "This page stays intentionally lightweight in the current build. It demonstrates how the shell can expand into a real-time operator workflow without overbuilding beyond the main reporting experience.",
+      "scopeTitle": "Current scope",
+      "scopeBody": "The production report remains the primary implemented surface. This destination shows how the information architecture can extend into a broader operational product."
+    }
+  },
+  "downtime": {
+    "eyebrow": "Downtime tracking",
+    "title": "Downtime review",
+    "description": "This section would help operators and supervisors review active and historical downtime records, validate causes, and quantify lost time by event.",
+    "bullets": [
+      "List downtime events with source, fault code, and operator-entered root cause.",
+      "Support quick categorization and notes capture on the floor.",
+      "Roll events into Pareto views for continuous improvement analysis."
+    ],
+    "panels": {
+      "purposeTitle": "Purpose",
+      "noteTitle": "View note",
+      "noteBody": "This page extends the dashboard into event-level review, where teams can move from summary reporting into operational diagnosis.",
+      "scopeTitle": "Current scope",
+      "scopeBody": "The current build keeps downtime detail at the dashboard level. This page outlines how the product can scale into dedicated event review and classification workflows."
+    }
+  },
+  "batchLog": {
+    "eyebrow": "Production history",
+    "title": "Batch log",
+    "description": "A batch-oriented page would track product runs, shift boundaries, and changeovers so supervisors can reconcile production output against plan.",
+    "bullets": [
+      "Capture start and end times for each product run or batch.",
+      "Link changeover periods to output loss and downtime classification.",
+      "Provide a clean handoff between production history and reporting."
+    ],
+    "panels": {
+      "purposeTitle": "Purpose",
+      "noteTitle": "View note",
+      "noteBody": "Batch history becomes especially useful when supervisors need to explain variance between schedule, output, and changeover loss.",
+      "scopeTitle": "Current scope",
+      "scopeBody": "The current dashboard focuses on a single report flow. This page shows how production history can plug into the same shell without changing the core UI language."
+    }
+  },
+  "facilityMap": {
+    "eyebrow": "Operations",
+    "title": "Facility map",
+    "description": "A facility-level view would let supervisors compare multiple lines and quickly spot underperforming assets across the plant.",
+    "bullets": [
+      "Show each production asset with current state and alert condition.",
+      "Help users move from site-wide monitoring into a specific line report.",
+      "Support expansion from a single-line report to a broader plant workflow."
+    ],
+    "panels": {
+      "purposeTitle": "Purpose",
+      "noteTitle": "View note",
+      "noteBody": "This view introduces a plant-level entry point while keeping the same calm, operational dashboard language as the line report.",
+      "scopeTitle": "Current scope",
+      "scopeBody": "The current implementation stays line-centric. This page shows how the architecture can scale toward multi-line supervision without forcing a redesign."
+    }
+  },
+  "supervisorView": {
+    "eyebrow": "Continuous improvement",
+    "title": "Supervisor view",
+    "description": "A supervisor-focused page would consolidate historical trends, ranking views, and cross-shift comparisons to identify the most meaningful improvement opportunities.",
+    "bullets": [
+      "Compare shifts, lines, and recurring losses over time.",
+      "Track OEE movement after operational changes or maintenance actions.",
+      "Use reporting to prioritize the next improvement opportunity."
+    ],
+    "panels": {
+      "purposeTitle": "Purpose",
+      "noteTitle": "View note",
+      "noteBody": "This destination is positioned as a management surface that sits one layer above the line report and connects operational losses to improvement action.",
+      "scopeTitle": "Current scope",
+      "scopeBody": "The report page remains the strongest implemented experience. This page exists to make the navigation believable and show how the product can broaden over time."
+    }
+  },
+  "settings": {
+    "eyebrow": "Administration",
+    "title": "Settings",
+    "description": "Settings would cover user preferences, notification thresholds, and line-specific configuration that supports daily monitoring and reporting.",
+    "bullets": [
+      "Configure target speed, line metadata, and timezone defaults.",
+      "Manage alert thresholds for downtime, speed loss, and quality drift.",
+      "Adjust preferences without interrupting the reporting workflow."
+    ],
+    "panels": {
+      "purposeTitle": "Purpose",
+      "noteTitle": "View note",
+      "noteBody": "Operational software still needs a simple administrative surface for thresholds, metadata, and user-level defaults.",
+      "scopeTitle": "Current scope",
+      "scopeBody": "Settings are intentionally lightweight in this build. The goal is to show a scalable shell, not to overbuild configuration workflows."
+    }
+  },
+  "help": {
+    "eyebrow": "Support",
+    "title": "Help and support",
+    "description": "A help area gives operators and supervisors fast access to onboarding, troubleshooting guidance, and escalation paths when issues appear on the line.",
+    "bullets": [
+      "Document how statuses, OEE, and downtime categories are defined.",
+      "Provide troubleshooting steps for sensors, gateway, and PLC integrations.",
+      "Offer quick escalation paths for production-critical issues."
+    ],
+    "panels": {
+      "purposeTitle": "Purpose",
+      "noteTitle": "View note",
+      "noteBody": "Support content matters in industrial software because operators need fast, clear guidance without leaving the workflow.",
+      "scopeTitle": "Current scope",
+      "scopeBody": "This page is intentionally simple and content-led. It demonstrates how the shell can support guidance and escalation flows alongside reporting."
+    }
+  }
+}

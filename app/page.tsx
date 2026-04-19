@@ -9,20 +9,26 @@ import {
 import { connection } from "next/server";
 
 import { AppShell } from "@/components/app-shell";
+import { MetricCard } from "@/components/metric-card";
 import { PerformanceChart } from "@/components/performance-chart";
 import { ReportFilterBar } from "@/components/report-filter-bar";
 import { StatusHistoryChart } from "@/components/status-history-chart";
 import { StatusTimeline } from "@/components/status-timeline";
+import { getReportPageContent, getShellContent } from "@/lib/content";
 import {
   formatDateLabel,
   formatDateTimeLabel,
   formatDuration,
   formatNumber,
   formatPercent,
-  formatSpeed,
 } from "@/lib/format";
 import { fetchReport } from "@/lib/report-api";
 import { resolvePageRange } from "@/lib/report-data";
+import {
+  createMetricCardViewModels,
+  createPerformancePillViewModels,
+  createStatusTimelinePillViewModels,
+} from "@/lib/report-view";
 import type { LineStatus } from "@/types/report";
 
 const statusAccent: Record<LineStatus, { bar: string; dot: string; icon: typeof CircleDot }> = {
@@ -40,6 +46,8 @@ export default async function Page({
 
   const params = await searchParams;
   const range = resolvePageRange(params);
+  const shellContent = getShellContent();
+  const reportPageContent = getReportPageContent();
 
   const fallbackStart = range.ok ? range.rawStart : new Date().toISOString();
   const fallbackEnd = range.ok ? range.rawEnd : new Date().toISOString();
@@ -48,18 +56,19 @@ export default async function Page({
     return (
       <AppShell
         generatedAt={new Date().toISOString()}
-        facilityName="Cascade Foods - Vancouver Plant"
-        lineName="Packaging Line 1"
+        facilityName={shellContent.brand.defaultFacilityName}
+        lineName={shellContent.brand.defaultLineName}
+        shellContent={shellContent}
       >
         <div className="space-y-5">
-          <ReportFilterBar start={fallbackStart} end={fallbackEnd} />
+          <ReportFilterBar start={fallbackStart} end={fallbackEnd} content={reportPageContent.filterBar} />
 
           <section className="rounded-[32px] border border-rose-200 bg-white p-6 shadow-[0_20px_60px_rgba(15,23,42,0.05)]">
             <div className="inline-flex items-center gap-2 rounded-full bg-rose-50 px-3 py-1.5 text-sm text-rose-700">
               <AlertTriangle className="h-4 w-4" />
-              Invalid report range
+              {reportPageContent.invalidRange.badgeLabel}
             </div>
-            <h2 className="mt-4 text-3xl font-semibold text-slate-950">We could not generate that report.</h2>
+            <h2 className="mt-4 text-3xl font-semibold text-slate-950">{reportPageContent.invalidRange.title}</h2>
             <p className="mt-3 max-w-2xl text-sm text-slate-500">{range.message}</p>
           </section>
         </div>
@@ -88,32 +97,36 @@ export default async function Page({
           : "The line is currently in unplanned downtime."
         : "The line is currently stopped (scheduled off).";
   const StatusIcon = statusAccent[currentStatus].icon;
+  const metricCards = createMetricCardViewModels(report, reportPageContent.metrics);
+  const performancePills = createPerformancePillViewModels(report, reportPageContent);
+  const statusTimelinePills = createStatusTimelinePillViewModels(report, reportPageContent);
 
   return (
     <AppShell
       generatedAt={report.range.generatedAt}
       facilityName={report.line.facilityName}
       lineName={report.line.name}
+      shellContent={shellContent}
     >
       <div className="space-y-5">
-        <ReportFilterBar start={report.range.start} end={report.range.end} />
+        <ReportFilterBar start={report.range.start} end={report.range.end} content={reportPageContent.filterBar} />
 
         <section className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm md:p-5">
           <div className="flex flex-col gap-5 border-b border-slate-200 pb-5">
             <div>
-              <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Current production report</p>
+              <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">{reportPageContent.header.eyebrow}</p>
               <h2 className="mt-2 text-[30px] font-semibold tracking-tight text-slate-950">
                 {report.line.name}
               </h2>
               <p className="mt-2 max-w-3xl text-sm text-slate-500">
-                {formatDateLabel(report.range.start)} to {formatDateLabel(report.range.end)} • Generated {formatDateTimeLabel(report.range.generatedAt)} • {report.line.productName} • {report.range.timezone}
+                {formatDateLabel(report.range.start)} to {formatDateLabel(report.range.end)} • {reportPageContent.header.generatedLabel} {formatDateTimeLabel(report.range.generatedAt)} • {report.line.productName} • {report.range.timezone}
               </p>
             </div>
 
             <div className="overflow-hidden rounded-[18px] border border-slate-200 bg-white">
               <div className={`h-1.5 w-full ${statusAccent[currentStatus].bar}`} />
               <div className="p-4">
-                <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">Current status</p>
+                <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">{reportPageContent.currentStatus.eyebrow}</p>
                 <div className="mt-3 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                   <div>
                     <div className="flex items-center gap-2">
@@ -124,15 +137,21 @@ export default async function Page({
                   </div>
 
                   <div className="grid gap-2 text-xs text-slate-600 sm:grid-cols-2">
-                    <div className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2">
-                      <span className="block text-[10px] uppercase tracking-[0.14em] text-slate-400">Current block</span>
+                    <div
+                      className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2"
+                      title={reportPageContent.tooltips.currentBlock}
+                    >
+                      <span className="block text-[10px] uppercase tracking-[0.14em] text-slate-400">{reportPageContent.currentStatus.currentBlockLabel}</span>
                       <span className="mt-1 block text-sm font-medium text-slate-900">
                         {formatDuration(currentStatusSegment?.durationMinutes ?? 0)}
                       </span>
                     </div>
                     {currentStatusSegment?.reasonLabel ? (
-                      <div className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2">
-                        <span className="block text-[10px] uppercase tracking-[0.14em] text-slate-400">Cause</span>
+                      <div
+                        className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2"
+                        title={`${reportPageContent.tooltips.currentCause} Current cause: ${currentStatusSegment.reasonLabel}.`}
+                      >
+                        <span className="block text-[10px] uppercase tracking-[0.14em] text-slate-400">{reportPageContent.currentStatus.causeLabel}</span>
                         <span className="mt-1 block text-sm font-medium text-slate-900">
                           {currentStatusSegment.reasonLabel}
                         </span>
@@ -146,41 +165,35 @@ export default async function Page({
             <article className="rounded-[22px] border border-slate-200 bg-slate-50 p-4">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Performance</p>
-                  <h3 className="mt-1.5 text-lg font-semibold text-slate-950">Performance over selected range</h3>
+                  <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">{reportPageContent.performance.eyebrow}</p>
+                  <h3 className="mt-1.5 text-lg font-semibold text-slate-950">{reportPageContent.performance.title}</h3>
                   <p className="mt-1 text-xs text-slate-500">
-                    Target {formatPercent(report.line.targetPerformance)} • Availability excludes planned downtime
+                    {reportPageContent.metrics.averagePerformance.hintPrefix} {formatPercent(report.line.targetPerformance)} • {reportPageContent.performance.helperTextSuffix}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2 text-xs text-slate-500">
-                  <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5">
-                    Availability {formatPercent(report.summary.availability)}
-                  </span>
-                  <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5">
-                    Quality {formatPercent(report.summary.quality)}
-                  </span>
-                  <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5">
-                    OEE {formatPercent(report.summary.oee)}
-                  </span>
+                  {performancePills.map((pill) => (
+                    <span
+                      key={pill.key}
+                      className="rounded-full border border-slate-200 bg-white px-3 py-1.5"
+                      title={pill.tooltip}
+                    >
+                      {pill.label} {pill.value}
+                    </span>
+                  ))}
                 </div>
               </div>
 
               <div className="mt-4 grid gap-3 border-t border-slate-200 pt-4 md:grid-cols-3">
-                <MetricCard
-                  label="Average speed"
-                  value={formatSpeed(report.summary.averageSpeedUpm)}
-                  hint={`Target ${report.line.targetUnitsPerMinute} upm`}
-                />
-                <MetricCard
-                  label="Total produced"
-                  value={formatNumber(report.summary.totalProduced)}
-                  hint={`${formatNumber(report.summary.goodUnits)} good • ${formatNumber(report.summary.rejectedUnits)} rejected`}
-                />
-                <MetricCard
-                  label="Average performance"
-                  value={formatPercent(report.summary.averagePerformance)}
-                  hint={`Target ${formatPercent(report.line.targetPerformance)}`}
-                />
+                {metricCards.map((metric) => (
+                  <MetricCard
+                    key={metric.key}
+                    label={metric.label}
+                    value={metric.value}
+                    hint={metric.hint}
+                    tooltip={metric.tooltip}
+                  />
+                ))}
               </div>
 
               <div className="mt-4 rounded-[18px] border border-slate-200 bg-white p-4">
@@ -199,9 +212,9 @@ export default async function Page({
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-[0_10px_30px_rgba(15,23,42,0.06)]">
                 <TriangleAlert className="h-6 w-6 text-slate-500" />
               </div>
-              <h3 className="mt-4 text-2xl font-semibold text-slate-950">No production activity in this range</h3>
+              <h3 className="mt-4 text-2xl font-semibold text-slate-950">{reportPageContent.emptyState.title}</h3>
               <p className="mx-auto mt-3 max-w-xl text-sm text-slate-500">
-                The selected period appears to contain only scheduled stop time. Try a weekday or a broader range to surface running and downtime events.
+                {reportPageContent.emptyState.description}
               </p>
             </div>
           ) : (
@@ -210,17 +223,16 @@ export default async function Page({
                 <article className="rounded-[22px] border border-slate-200 bg-slate-50 p-4">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Status over time</p>
-                      <h3 className="mt-1.5 text-lg font-semibold text-slate-950">Line status over selected range</h3>
-                      <p className="mt-1 text-xs text-slate-500">Hover a segment to see its time window and cause.</p>
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">{reportPageContent.statusTimeline.eyebrow}</p>
+                      <h3 className="mt-1.5 text-lg font-semibold text-slate-950">{reportPageContent.statusTimeline.title}</h3>
+                      <p className="mt-1 text-xs text-slate-500">{reportPageContent.statusTimeline.helperText}</p>
                     </div>
                     <div className="flex flex-wrap gap-2 text-xs text-slate-500">
-                      <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-amber-700">
-                        {formatDuration(report.summary.totalUnplannedDowntimeMinutes)} unplanned
-                      </span>
-                      <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 text-violet-700">
-                        {formatDuration(report.summary.totalPlannedDowntimeMinutes)} planned
-                      </span>
+                      {statusTimelinePills.map((pill) => (
+                        <span key={pill.key} className={pill.className} title={pill.tooltip}>
+                          {pill.value} {pill.label}
+                        </span>
+                      ))}
                     </div>
                   </div>
 
@@ -229,6 +241,7 @@ export default async function Page({
                       segments={report.statusTimeline}
                       rangeStart={report.range.start}
                       rangeEnd={report.range.end}
+                      labels={reportPageContent.statusTimeline.labels}
                     />
                   </div>
                 </article>
@@ -238,19 +251,22 @@ export default async function Page({
                 <article className="rounded-[22px] border border-slate-200 bg-slate-50 p-4">
                   <div className="flex items-center justify-between gap-4">
                     <div>
-                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Downtime ranking</p>
-                      <h3 className="mt-1.5 text-lg font-semibold text-slate-950">Most common downtime events</h3>
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">{reportPageContent.downtime.eyebrow}</p>
+                      <h3 className="mt-1.5 text-lg font-semibold text-slate-950">{reportPageContent.downtime.title}</h3>
                     </div>
-                    <div className="flex items-center gap-2 rounded-full bg-[#fff4df] px-3 py-1.5 text-xs text-[#b0781c]">
+                    <div
+                      className="flex items-center gap-2 rounded-full bg-[#fff4df] px-3 py-1.5 text-xs text-[#b0781c]"
+                      title={reportPageContent.tooltips.rankedByImpact}
+                    >
                       <Wrench className="h-4 w-4" />
-                      Ranked by impact
+                      {reportPageContent.downtime.rankedByImpactLabel}
                     </div>
                   </div>
 
                   <div className="mt-5 space-y-4">
                     {report.downtimePareto.length === 0 ? (
                       <div className="rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-6 text-sm text-slate-500">
-                        No downtime events occurred during the selected range.
+                        {reportPageContent.downtime.noEventsText}
                       </div>
                     ) : (
                       report.downtimePareto.map((event, index) => {
@@ -259,10 +275,14 @@ export default async function Page({
                         const KindIcon = isPlanned ? CalendarClock : AlertTriangle;
 
                         return (
-                          <div key={event.cause} className="rounded-2xl border border-slate-200 bg-white p-4">
+                          <div
+                            key={event.cause}
+                            className="rounded-2xl border border-slate-200 bg-white p-4"
+                            title={`${event.cause}: ${event.eventCount} ${event.eventCount === 1 ? "event" : "events"}, ${formatDuration(event.totalMinutes)} total, ${formatPercent(event.impactShare)} of downtime impact.`}
+                          >
                             <div className="flex items-start justify-between gap-4">
                               <div>
-                                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">#{index + 1} cause</p>
+                                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">#{index + 1} {reportPageContent.downtime.causeEyebrowSuffix}</p>
                                 <div className="mt-1 flex items-center gap-2">
                                   <h4 className="text-base font-semibold text-slate-950">{event.cause}</h4>
                                   <span
@@ -273,11 +293,11 @@ export default async function Page({
                                     }`}
                                   >
                                     <KindIcon className="h-3 w-3" aria-hidden="true" />
-                                    {isPlanned ? "Planned" : "Unplanned"}
+                                    {isPlanned ? reportPageContent.downtime.kindLabels.planned : reportPageContent.downtime.kindLabels.unplanned}
                                   </span>
                                 </div>
                                 <p className="mt-2 text-sm text-slate-500">
-                                  {event.eventCount} {event.eventCount === 1 ? "event" : "events"} • {formatDuration(event.totalMinutes)}
+                                  {event.eventCount} {event.eventCount === 1 ? reportPageContent.downtime.eventLabelSingular : reportPageContent.downtime.eventLabelPlural} • {formatDuration(event.totalMinutes)}
                                 </p>
                                 {sampleEvent ? (
                                   <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-500">
@@ -307,11 +327,11 @@ export default async function Page({
 
                 <article className="rounded-[22px] border border-slate-200 bg-slate-50 p-4">
                   <div>
-                    <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Summary</p>
-                    <h3 className="mt-1.5 text-lg font-semibold text-slate-950">Status mix</h3>
+                    <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">{reportPageContent.statusMix.eyebrow}</p>
+                    <h3 className="mt-1.5 text-lg font-semibold text-slate-950">{reportPageContent.statusMix.title}</h3>
                   </div>
                   <div className="mt-5">
-                    <StatusHistoryChart segments={report.statusTimeline} />
+                    <StatusHistoryChart segments={report.statusTimeline} content={reportPageContent.statusMix} />
                   </div>
                 </article>
               </div>
@@ -320,23 +340,5 @@ export default async function Page({
         </section>
       </div>
     </AppShell>
-  );
-}
-
-function MetricCard({
-  label,
-  value,
-  hint,
-}: {
-  label: string;
-  value: string;
-  hint: string;
-}) {
-  return (
-    <div className="rounded-[18px] border border-slate-200 bg-white px-4 py-4">
-      <p className="text-[11px] uppercase tracking-[0.16em] text-slate-400">{label}</p>
-      <div className="mt-3 text-[18px] font-semibold leading-tight text-slate-950 md:text-[20px]">{value}</div>
-      <p className="mt-2 text-[11px] uppercase tracking-[0.16em] text-slate-400">{hint}</p>
-    </div>
   );
 }

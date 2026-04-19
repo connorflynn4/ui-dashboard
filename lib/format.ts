@@ -1,25 +1,62 @@
-const dashboardDateFormatter = new Intl.DateTimeFormat("en-CA", {
-  year: "numeric",
+const DASHBOARD_TIME_ZONE = "America/Vancouver";
+
+const datePartsFormatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
   day: "numeric",
-  timeZone: "UTC",
+  year: "numeric",
+  timeZone: DASHBOARD_TIME_ZONE,
 });
 
-const dashboardDateTimeFormatter = new Intl.DateTimeFormat("en-CA", {
-  year: "numeric",
+const dateTimePartsFormatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
   day: "numeric",
+  year: "numeric",
   hour: "numeric",
   minute: "2-digit",
+  hour12: true,
+  timeZone: DASHBOARD_TIME_ZONE,
   timeZoneName: "short",
 });
 
-const shortTickFormatter = new Intl.DateTimeFormat("en-US", {
+const hourTickPartsFormatter = new Intl.DateTimeFormat("en-US", {
+  hour: "numeric",
+  hour12: true,
+  timeZone: DASHBOARD_TIME_ZONE,
+});
+
+const dayHourTickPartsFormatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
   day: "numeric",
   hour: "numeric",
   hour12: true,
+  timeZone: DASHBOARD_TIME_ZONE,
 });
+
+const dayTickPartsFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  timeZone: DASHBOARD_TIME_ZONE,
+});
+
+const headerTimeFormatter = new Intl.DateTimeFormat("en-US", {
+  hour: "numeric",
+  minute: "2-digit",
+  hour12: true,
+  timeZone: DASHBOARD_TIME_ZONE,
+});
+
+const HOUR_MS = 60 * 60 * 1000;
+const DAY_MS = 24 * HOUR_MS;
+
+function partsToRecord(parts: Intl.DateTimeFormatPart[]) {
+  return parts.reduce<Record<string, string>>((accumulator, part) => {
+    if (part.type !== "literal") {
+      accumulator[part.type] = part.value;
+    }
+
+    return accumulator;
+  }, {});
+}
 
 export function formatNumber(value: number) {
   return new Intl.NumberFormat("en-US").format(value);
@@ -34,49 +71,39 @@ export function formatSpeed(value: number) {
 }
 
 export function formatDateLabel(value: string) {
-  return dashboardDateFormatter.format(new Date(value));
+  const parts = partsToRecord(datePartsFormatter.formatToParts(new Date(value)));
+  return `${parts.month} ${parts.day}, ${parts.year}`;
 }
 
 export function formatDateTimeLabel(value: string) {
-  return dashboardDateTimeFormatter.format(new Date(value));
+  const parts = partsToRecord(dateTimePartsFormatter.formatToParts(new Date(value)));
+  return `${parts.month} ${parts.day}, ${parts.year} at ${parts.hour}:${parts.minute} ${parts.dayPeriod} ${parts.timeZoneName}`;
 }
 
 export function formatShortTick(value: string) {
-  return shortTickFormatter.format(new Date(value));
+  const parts = partsToRecord(dayHourTickPartsFormatter.formatToParts(new Date(value)));
+  return `${parts.month} ${parts.day}, ${parts.hour} ${parts.dayPeriod}`;
 }
 
-const hourTickFormatter = new Intl.DateTimeFormat("en-US", {
-  hour: "numeric",
-  hour12: true,
-});
-
-const dayHourTickFormatter = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  day: "numeric",
-  hour: "numeric",
-  hour12: true,
-});
-
-const dayTickFormatter = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  day: "numeric",
-});
-
-const HOUR_MS = 60 * 60 * 1000;
-const DAY_MS = 24 * HOUR_MS;
+export function formatHeaderTime(value: string) {
+  return headerTimeFormatter.format(new Date(value));
+}
 
 export function formatAdaptiveTick(value: string, rangeDurationMs: number) {
   const date = new Date(value);
 
   if (rangeDurationMs <= DAY_MS) {
-    return hourTickFormatter.format(date);
+    const parts = partsToRecord(hourTickPartsFormatter.formatToParts(date));
+    return `${parts.hour} ${parts.dayPeriod}`;
   }
 
   if (rangeDurationMs <= 3 * DAY_MS) {
-    return dayHourTickFormatter.format(date);
+    const parts = partsToRecord(dayHourTickPartsFormatter.formatToParts(date));
+    return `${parts.month} ${parts.day}, ${parts.hour} ${parts.dayPeriod}`;
   }
 
-  return dayTickFormatter.format(date);
+  const parts = partsToRecord(dayTickPartsFormatter.formatToParts(date));
+  return `${parts.month} ${parts.day}`;
 }
 
 export function formatDuration(minutes: number) {

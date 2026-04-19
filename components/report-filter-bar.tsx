@@ -5,13 +5,13 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { CalendarRange, RefreshCcw } from "lucide-react";
 
 import { toDateInputValue } from "@/lib/format";
+import type { ReportPageContent, ReportPresetKey } from "@/types/content";
 
 type ReportFilterBarProps = {
   start: string;
   end: string;
+  content: ReportPageContent["filterBar"];
 };
-
-type PresetKey = "24h" | "7d" | "30d";
 
 function shiftDays(days: number) {
   const end = new Date();
@@ -20,7 +20,7 @@ function shiftDays(days: number) {
   return { start, end };
 }
 
-function presetRange(key: PresetKey) {
+function presetRange(key: ReportPresetKey) {
   if (key === "24h") {
     const end = new Date();
     const start = new Date(end.getTime() - 24 * 60 * 60 * 1000);
@@ -34,7 +34,7 @@ function presetRange(key: PresetKey) {
   return shiftDays(7);
 }
 
-export function ReportFilterBar({ start, end }: ReportFilterBarProps) {
+export function ReportFilterBar({ start, end, content }: ReportFilterBarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -70,7 +70,7 @@ export function ReportFilterBar({ start, end }: ReportFilterBarProps) {
     });
   }
 
-  function applyPreset(key: PresetKey) {
+  function applyPreset(key: ReportPresetKey) {
     const range = presetRange(key);
     setStartDate(toDateInputValue(range.start.toISOString()));
     setEndDate(toDateInputValue(range.end.toISOString()));
@@ -96,15 +96,15 @@ export function ReportFilterBar({ start, end }: ReportFilterBarProps) {
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] uppercase tracking-[0.2em] text-slate-500">
             <CalendarRange className="h-3.5 w-3.5" />
-            Report range
+            {content.badgeLabel}
           </div>
           <p className="mt-2 max-w-2xl text-sm text-slate-500">
-            Review production performance, downtime impact, and line status over the selected period.
+            {content.helperText}
           </p>
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {(["24h", "7d", "30d"] as const).map((preset) => (
+          {(Object.entries(content.presets) as Array<[ReportPresetKey, string]>).map(([preset, label]) => (
             <button
               key={preset}
               type="button"
@@ -115,7 +115,7 @@ export function ReportFilterBar({ start, end }: ReportFilterBarProps) {
                   : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-950"
               }`}
             >
-              Last {preset}
+              {label}
             </button>
           ))}
         </div>
@@ -126,7 +126,7 @@ export function ReportFilterBar({ start, end }: ReportFilterBarProps) {
         className="mt-4 grid gap-3 rounded-[18px] border border-slate-200 bg-slate-50 p-3 md:grid-cols-[1fr_1fr_auto] md:p-3"
       >
         <label className="space-y-2">
-          <span className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">Start</span>
+          <span className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">{content.startLabel}</span>
           <input
             type="date"
             name="startDate"
@@ -137,7 +137,7 @@ export function ReportFilterBar({ start, end }: ReportFilterBarProps) {
         </label>
 
         <label className="space-y-2">
-          <span className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">End</span>
+          <span className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">{content.endLabel}</span>
           <input
             type="date"
             name="endDate"
@@ -153,7 +153,7 @@ export function ReportFilterBar({ start, end }: ReportFilterBarProps) {
           className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#89a7ea] px-5 text-sm font-medium text-white transition hover:bg-[#7898de] disabled:cursor-wait disabled:opacity-70"
         >
           <RefreshCcw className={`h-4 w-4 ${isPending ? "animate-spin" : ""}`} />
-          {isPending ? "Refreshing..." : "Generate report"}
+          {isPending ? content.pendingLabel : content.submitLabel}
         </button>
       </form>
     </div>

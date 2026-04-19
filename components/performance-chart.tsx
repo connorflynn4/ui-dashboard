@@ -40,6 +40,31 @@ export function PerformanceChart({
     performanceLine: point.performance > 0 ? point.performance : null,
   }));
 
+  const firstActualIndex = chartData.findIndex((point) => point.performanceLine !== null);
+  const lastActualIndex = [...chartData]
+    .reverse()
+    .findIndex((point) => point.performanceLine !== null);
+
+  if (firstActualIndex !== -1) {
+    const firstActualValue = chartData[firstActualIndex]?.performanceLine ?? null;
+    const resolvedLastActualIndex = chartData.length - 1 - lastActualIndex;
+    const lastActualValue = chartData[resolvedLastActualIndex]?.performanceLine ?? null;
+
+    for (let index = 0; index < firstActualIndex; index += 1) {
+      chartData[index] = {
+        ...chartData[index],
+        performanceLine: firstActualValue,
+      };
+    }
+
+    for (let index = resolvedLastActualIndex + 1; index < chartData.length; index += 1) {
+      chartData[index] = {
+        ...chartData[index],
+        performanceLine: lastActualValue,
+      };
+    }
+  }
+
   return (
     <div className="h-[280px] w-full">
       <ResponsiveContainer width="100%" height="100%">

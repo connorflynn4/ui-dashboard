@@ -1,13 +1,16 @@
 import { AppShell } from "@/components/app-shell";
 import { ReportSkeleton } from "@/components/report-skeleton";
-import { APP_FACILITY_NAME, APP_LINE_NAME } from "@/lib/app-config";
+import { getShellContent } from "@/lib/content";
 
 export default function Loading() {
+  const shellContent = getShellContent();
+
   return (
     <AppShell
       generatedAt={new Date().toISOString()}
-      facilityName={APP_FACILITY_NAME}
-      lineName={APP_LINE_NAME}
+      facilityName={shellContent.brand.defaultFacilityName}
+      lineName={shellContent.brand.defaultLineName}
+      shellContent={shellContent}
     >
       <ReportSkeleton />
     </AppShell>
