@@ -2,6 +2,7 @@
 
 import {
   Blocks,
+  ChevronDown,
   HelpCircle,
   Inbox,
   LayoutGrid,
@@ -40,11 +41,28 @@ const iconMap: Record<IconKey, typeof LayoutGrid> = {
   helpCircle: HelpCircle,
 };
 
+function getUserInitials(displayName: string, fallbackInitials: string) {
+  if (fallbackInitials.trim().length > 0) {
+    return fallbackInitials.trim().slice(0, 2).toUpperCase();
+  }
+
+  const initials = displayName
+    .replace(/[^a-zA-Z\s]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+
+  return initials || "U";
+}
+
 export function AppShell({ children, generatedAt, facilityName, lineName, shellContent }: AppShellProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [pendingHref, setPendingHref] = useState<string | null>(null);
   const pathname = usePathname();
   const isNavigating = pendingHref !== null && pendingHref !== pathname;
+  const userInitials = getUserInitials(shellContent.currentUser.displayName, shellContent.currentUser.initials);
 
   function handleNavClick(href: string) {
     setIsMobileMenuOpen(false);
@@ -151,32 +169,79 @@ export function AppShell({ children, generatedAt, facilityName, lineName, shellC
 
           <div className="flex h-screen min-w-0 flex-1 flex-col overflow-hidden">
             <header className="border-b border-slate-200 bg-white px-4 py-3 md:px-6 xl:px-7">
-              <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <div className="flex min-w-0 items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setIsMobileMenuOpen(true)}
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 lg:hidden"
-                  >
-                    <Menu className="h-5 w-5" />
-                  </button>
-                  <div className="min-w-0">
-                    <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">{shellContent.brand.headerEyebrow}</p>
-                    <div className="mt-0.5 flex min-w-0 flex-col gap-0.5 lg:flex-row lg:items-baseline lg:gap-3">
-                      <p className="truncate text-[16px] font-semibold text-slate-900 md:text-[18px]">{lineName}</p>
-                      <p className="truncate text-[13px] text-slate-500">{facilityName}</p>
+              <div className="lg:hidden">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setIsMobileMenuOpen(true)}
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600"
+                    >
+                      <Menu className="h-5 w-5" />
+                    </button>
+                    <p className="truncate text-[11px] uppercase tracking-[0.22em] text-slate-400">
+                      {shellContent.brand.headerEyebrow}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2">
+                    <div className="inline-flex min-w-0 items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-2 py-1.5">
+                      <div className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                      <span className="text-[12px] font-medium leading-none text-slate-700">
+                        {shellContent.brand.liveBadgeLabel}
+                      </span>
+                      <span className="text-[12px] text-slate-500">
+                        {formatHeaderTime(generatedAt)}
+                      </span>
+                    </div>
+
+                    <div className="inline-flex items-center rounded-full border border-slate-200 bg-white p-1 shadow-[0_8px_18px_-18px_rgba(15,23,42,0.45)]">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#ffd956] text-[11px] font-semibold text-slate-900 shadow-[inset_0_-5px_10px_rgba(245,158,11,0.14)]">
+                        {userInitials}
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="inline-flex items-center gap-2 self-start rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1.5 lg:self-auto">
-                  <div className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                  <div className="text-left">
-                    <p className="text-[12px] font-medium leading-none text-slate-700">{shellContent.brand.liveBadgeLabel}</p>
+                <div className="mt-3">
+                  <p className="truncate text-[16px] font-semibold text-slate-900 sm:text-[17px]">{lineName}</p>
+                  <p className="mt-0.5 truncate text-[13px] text-slate-500 sm:text-[14px]">{facilityName}</p>
+                </div>
+              </div>
+
+              <div className="hidden lg:flex lg:items-center lg:justify-between">
+                <div className="flex min-w-0 items-start gap-3">
+                  <div className="min-w-0 pt-0.5">
+                    <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">{shellContent.brand.headerEyebrow}</p>
+                    <div className="mt-1 flex min-w-0 flex-col gap-0.5 lg:flex-row lg:items-baseline lg:gap-3">
+                      <p className="truncate text-[16px] font-semibold text-slate-900 sm:text-[17px] md:text-[18px]">{lineName}</p>
+                      <p className="truncate text-[13px] text-slate-500 sm:text-[14px]">{facilityName}</p>
+                    </div>
                   </div>
-                  <span className="text-[12px] text-slate-500">
-                    {formatHeaderTime(generatedAt)}
-                  </span>
+                </div>
+
+                <div className="flex items-center justify-end gap-3 lg:self-auto">
+                  <div className="inline-flex min-w-0 items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-2 py-1.5 sm:px-2.5">
+                    <div className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                    <span className="text-[12px] font-medium leading-none text-slate-700 sm:text-[13px]">
+                      {shellContent.brand.liveBadgeLabel}
+                    </span>
+                    <span className="text-[12px] text-slate-500 sm:text-[13px]">
+                      {formatHeaderTime(generatedAt)}
+                    </span>
+                  </div>
+
+                  <div className="inline-flex items-center rounded-full border border-slate-200 bg-white p-1 shadow-[0_8px_18px_-18px_rgba(15,23,42,0.45)]">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#ffd956] text-[11px] font-semibold text-slate-900 shadow-[inset_0_-5px_10px_rgba(245,158,11,0.14)]">
+                      {userInitials}
+                    </div>
+                    <div className="flex items-center gap-0.5 pl-2 pr-2">
+                      <span className="text-[13px] font-medium tracking-[-0.01em] text-slate-900">
+                        {shellContent.currentUser.displayName}
+                      </span>
+                      <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </header>

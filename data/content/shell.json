@@ -6,6 +6,10 @@
     "defaultFacilityName": "Cascade Foods - Vancouver Plant",
     "defaultLineName": "Packaging Line 1"
   },
+  "currentUser": {
+    "displayName": "Connor Flynn",
+    "initials": "CF"
+  },
   "navigation": {
     "mainSectionLabel": "Main",
     "mainItems": [

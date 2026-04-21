@@ -19,7 +19,6 @@ import {
   formatDateLabel,
   formatDateTimeLabel,
   formatDuration,
-  formatNumber,
   formatPercent,
 } from "@/lib/format";
 import { fetchReport } from "@/lib/report-api";

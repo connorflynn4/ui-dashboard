@@ -34,6 +34,10 @@ export interface ShellContent {
     defaultFacilityName: string;
     defaultLineName: string;
   };
+  currentUser: {
+    displayName: string;
+    initials: string;
+  };
   navigation: {
     mainSectionLabel: string;
     mainItems: ShellNavItemContent[];
