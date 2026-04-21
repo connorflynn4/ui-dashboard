@@ -67,8 +67,14 @@ export function StatusHistoryChart({ segments, content }: StatusHistoryChartProp
   return (
     <div className="space-y-6">
       <div className="mx-auto max-w-[280px]">
-        <div className="relative h-[240px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
+        <div className="relative h-[240px] w-full min-w-0">
+          <ResponsiveContainer
+            width="100%"
+            height="100%"
+            minWidth={0}
+            minHeight={240}
+            initialDimension={{ width: 280, height: 240 }}
+          >
             <PieChart>
               <RechartsTooltip
                 formatter={(value, _name, item) => {

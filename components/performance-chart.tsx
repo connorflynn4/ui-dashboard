@@ -66,8 +66,14 @@ export function PerformanceChart({
   }
 
   return (
-    <div className="h-[280px] w-full">
-      <ResponsiveContainer width="100%" height="100%">
+    <div className="h-[280px] w-full min-w-0">
+      <ResponsiveContainer
+        width="100%"
+        height="100%"
+        minWidth={0}
+        minHeight={280}
+        initialDimension={{ width: 640, height: 280 }}
+      >
         <LineChart data={chartData} margin={{ top: 12, right: 24, left: 12, bottom: 8 }}>
           <CartesianGrid stroke="#dfe7ff" strokeDasharray="4 5" vertical={false} />
           <XAxis

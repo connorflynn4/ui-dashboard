@@ -79,8 +79,9 @@ export function AppShell({ children, generatedAt, facilityName, lineName, shellC
                     src="/iotlogo.png"
                     alt={shellContent.brand.logoAlt}
                     width={150}
-                    height={42}
-                    className="h-auto w-[150px] object-contain"
+                    height={65}
+                    style={{ height: "auto" }}
+                    className="object-contain"
                   />
                 </div>
                 <button
