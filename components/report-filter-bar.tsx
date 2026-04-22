@@ -109,7 +109,7 @@ export function ReportFilterBar({ start, end, content }: ReportFilterBarProps) {
               key={preset}
               type="button"
               onClick={() => applyPreset(preset)}
-              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+              className={`cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition ${
                 activePreset === preset
                   ? "bg-[#89a7ea] text-white"
                   : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-950"

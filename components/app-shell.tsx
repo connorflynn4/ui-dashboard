@@ -92,7 +92,12 @@ export function AppShell({ children, generatedAt, facilityName, lineName, shellC
           >
             <div className="border-b border-[#eef1f5] px-5 py-5">
               <div className="flex items-center justify-between">
-                <div className="flex items-center">
+                <Link
+                  href="/"
+                  aria-label="Go to dashboard"
+                  onClick={() => handleNavClick("/")}
+                  className="flex items-center rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4f6ff3] focus-visible:ring-offset-2"
+                >
                   <Image
                     src="/iotlogo.png"
                     alt={shellContent.brand.logoAlt}
@@ -101,7 +106,7 @@ export function AppShell({ children, generatedAt, facilityName, lineName, shellC
                     style={{ height: "auto" }}
                     className="object-contain"
                   />
-                </div>
+                </Link>
                 <button
                   type="button"
                   onClick={() => setIsMobileMenuOpen(false)}
